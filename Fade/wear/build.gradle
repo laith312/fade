@@ -7,7 +7,7 @@ android {
 
     defaultConfig {
         applicationId "com.messenger.fade"
-        minSdkVersion 20
+        minSdkVersion 14
         targetSdkVersion 20
         versionCode 1
         versionName "1.0"
