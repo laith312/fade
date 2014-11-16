@@ -10,5 +10,4 @@ public class Message {
     private String body;
     private List<User> recipients;
     private int fadeTime;
-
 }
