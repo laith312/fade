@@ -1,77 +1,290 @@
 package com.messenger.fade.model;
 
-public class User {
+import org.json.JSONObject;
 
-    private String userId;
-    private String primaryEmail;
-    private String userName;
-    private String handle;
-    private String firstName;
-    private String lastName;
-    private String profilePictureUrl;
-    private int age;
+import java.sql.Timestamp;
 
-    public String getUserId() {
-        return userId;
-    }
+public final class User extends DomainObject {
+	
+	private long id;
+	private String username;
+	private String password;
+	private String fullname;
+	private String email;
+	private String website;
+	private int age=18;
+	private String gender;
+	private String bio;
+	private int locationVisibility=1;
+	private Timestamp tstamp;
+	private int followsCount;
+	private int followersCount;
+	private String location;
+	private double lat;
+	private double lon;
+	private int mediaCount;
+	private String profilePicUrl;
+	private int privacyLevel;
 
-    public void setUserId(final String userId) {
-        this.userId = userId;
-    }
+	public User() {
+		super();
+	}
 
-    public String getPrimaryEmail() {
-        return primaryEmail;
-    }
+	private static final long serialVersionUID = 3121394108242466120L;	
 
-    public void setPrimaryEmail(final String primaryEmail) {
-        this.primaryEmail = primaryEmail;
-    }
+	public double getLat() {
+		return lat;
+	}
 
-    public String getUserName() {
-        return userName;
-    }
+	public void setLat(double lat) {
+		this.lat = lat;
+	}
 
-    public void setUserName(final String userName) {
-        this.userName = userName;
-    }
+	public double getLon() {
+		return lon;
+	}
 
-    public String getHandle() {
-        return handle;
-    }
+	public void setLon(double lon) {
+		this.lon = lon;
+	}
 
-    public void setHandle(final String handle) {
-        this.handle = handle;
-    }
+	public long getId() {
+		return id;
+	}
 
-    public String getFirstName() {
-        return firstName;
-    }
+	public void setId(long id) {
+		this.id = id;
+	}
 
-    public void setFirstName(final String firstName) {
-        this.firstName = firstName;
-    }
+	public String getUsername() {
+		return username;
+	}
 
-    public String getLastName() {
-        return lastName;
-    }
+	public void setUsername(String username) {
+		this.username = username;
+	}
 
-    public void setLastName(final String lastName) {
-        this.lastName = lastName;
-    }
+	public String getPassword() {
+		return password;
+	}
 
-    public String getProfilePictureUrl() {
-        return profilePictureUrl;
-    }
+	public void setPassword(String password) {
+		this.password = password;
+	}
 
-    public void setProfilePictureUrl(final String profilePictureUrl) {
-        this.profilePictureUrl = profilePictureUrl;
-    }
+	public String getFullname() {
+		return fullname;
+	}
 
-    public int getAge() {
-        return age;
-    }
+	public void setFullname(String fullname) {
+		this.fullname = fullname;
+	}
 
-    public void setAge(final int age) {
-        this.age = age;
-    }
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getLocation() {
+		return location;
+	}
+	
+	public String getAnonymousLocation() {
+		return stripStreetAddress(location);
+	}
+
+	public void setLocation(String location) {
+		if (location != null && location.length() > 128){
+			location = location.substring(0,128);
+		}
+		this.location = location;
+	}
+
+	public String getWebsite() {
+		return website;
+	}
+
+	public void setWebsite(String website) {
+		if (website != null && website.length() > 128){
+			website = website.substring(0,128);
+		}
+		this.website = website;
+	}
+
+	public int getAge() {
+		return age;
+	}
+
+	public void setAge(int age) {
+		this.age = age;
+	}
+
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
+	public String getBio() {
+		return bio;
+	}
+
+	public void setBio(String bio) {
+		if (bio != null && bio.length() > 512){
+			bio = bio.substring(0,512);
+		}
+		this.bio = bio;
+	}
+
+	public int getLocationVisibility() {
+		return locationVisibility;
+	}
+
+	public void setLocationVisibility(int locationVisibility) {
+		this.locationVisibility = locationVisibility;
+	}
+
+	public Timestamp getTstamp() {
+		return tstamp;
+	}
+
+	public void setTstamp(Timestamp tstamp) {
+		this.tstamp = tstamp;
+	}
+
+	public int getFollowsCount() {
+		return followsCount;
+	}
+
+	public void setFollowsCount(int followsCount) {
+		this.followsCount = followsCount;
+	}
+
+	public int getFollowersCount() {
+		return followersCount;
+	}
+
+	public void setFollowersCount(int followersCount) {
+		this.followersCount = followersCount;
+	}
+
+	/**
+	 * Converts the location stored in the database to a user-friendly location
+	 * string
+	 * 
+	 * @param loc
+	 * @return
+	 */
+	private static String stripStreetAddress(final String loc) {
+		if (isBlank(loc)) {
+			return "";
+		}
+		final String[] a = loc.split("\\|");
+		if (a.length >= 2) {
+			final String part1 = stripOutNumbers(a[a.length - 2]);
+			final String part2 = stripOutNumbers(a[a.length - 1]);
+			return part1 + "|" + part2;
+		}
+		return "";
+	}
+
+	public int getMediaCount() {
+		return mediaCount;
+	}
+
+	public void setMediaCount(final int mediaCount) {
+		this.mediaCount = mediaCount;
+	}
+
+	public String getProfilePicUrl() {
+		return profilePicUrl;
+	}
+
+	public void setProfilePicUrl(String profilePicUrl) {
+		if (profilePicUrl != null && profilePicUrl.length() > 128){
+			profilePicUrl = null;
+		}
+		this.profilePicUrl = profilePicUrl;
+	}
+
+	/**
+	 * 
+	 * @param inUser
+	 */
+	public void copyFrom(final User inUser) {
+		super.copyFrom(inUser);
+	}
+	
+	public static int determineGender(final String gender) {
+		if (gender == null) {
+			return 0;
+		}
+		if (gender.equals("m")) {
+			return 1;
+		}
+		if (gender.equals("f")) {
+			return 2;
+		}
+		return 0;
+	}
+
+	public int getPrivacyLevel() {
+		return privacyLevel;
+	}
+
+	public void setPrivacyLevel(int privacyLevel) {
+		this.privacyLevel = privacyLevel;
+	}
+	
+	public static User from(final JSONObject object) {
+		final User user = new User();
+		user.setAge(object.optInt("age"));
+		user.setId(object.optLong("id"));
+		user.setUsername(object.optString("username"));
+		user.setFullname(object.optString("fullname"));
+		user.setEmail(object.optString("email"));
+		user.setWebsite(object.optString("website"));
+		user.setGender(object.optString("gender"));
+		user.setLocation(object.optString("location"));
+		user.setBio(object.optString("bio"));
+		user.setLocationVisibility(object.optInt("locationVisibility"));
+		user.setPrivacyLevel(object.optInt("privacyLevel"));
+		user.setFollowersCount(object.optInt("followersCount"));
+		user.setFollowsCount(object.optInt("followsCount"));
+		user.setLat(object.optDouble("lat"));
+		user.setLon(object.optDouble("lon"));
+		user.setProfilePicUrl(object.optString("profilePicUrl"));
+		user.setMediaCount(object.optInt("mediaCounts"));
+		return user;
+	}
+	
+	private static String stripOutNumbers(final String str) {
+		if (isEmpty(str)) {
+			return str;
+		}
+		final StringBuilder sb = new StringBuilder(str.length());
+		for (int i=0; i < str.length(); i++) {
+			if (Character.isDigit(str.charAt(i))) {
+				continue;
+			} else {
+				sb.append(str.charAt(i));
+			}
+		}
+		return sb.toString();
+	}
+	
+	private static boolean isEmpty(final String s) {
+		return s == null || s.equals("");
+	}
+	
+	private static boolean isBlank(final String s) {
+		return s == null || s.trim().equals("");
+	}
+
 }
+
