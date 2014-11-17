@@ -4,6 +4,7 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
@@ -15,7 +16,6 @@ import com.messenger.fade.ui.fragments.ContactsFragment;
 import com.messenger.fade.ui.fragments.MessagesFragment;
 import com.messenger.fade.ui.fragments.NavigationDrawerFragment;
 import com.messenger.fade.ui.fragments.ProfileFragment;
-import com.messenger.fade.ui.fragments.SettingsFragment;
 
 public class FadeNavActivity extends Activity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -64,8 +64,10 @@ public class FadeNavActivity extends Activity
                 newFragment = new ChatFragment();
                 break;
             case 4:
-                newFragment = new SettingsFragment();
-                break;
+                Intent i = new Intent(this, SettingsActivity.class);
+                startActivity(i);
+                return;
+            //newFragment = new SettingsFragmentX();
 
             default:
                 newFragment = new ProfileFragment();
@@ -123,6 +125,8 @@ public class FadeNavActivity extends Activity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_settings) {
+            final Intent i = new Intent(this, SettingsActivity.class);
+            startActivity(i);
             return true;
         }
         return super.onOptionsItemSelected(item);
