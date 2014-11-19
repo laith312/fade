@@ -1,6 +1,7 @@
 package com.messenger.fade.application;
 
 import android.app.Application;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
@@ -10,6 +11,7 @@ import com.android.volley.toolbox.Volley;
 import com.messenger.fade.R;
 import com.messenger.fade.model.User;
 import com.messenger.fade.util.BitmapLruCache;
+import com.messenger.fade.util.HttpMessage;
 import com.messenger.fade.util.MLog;
 import com.messenger.fade.util.ThreadWrapper;
 
@@ -17,6 +19,8 @@ import org.json.JSONObject;
 
 
 public final class FadeApplication extends Application {
+
+    private static final String TAG = FadeApplication.class.getSimpleName();
 
     private static String SHARED_PREFS_ME_KEY = "me";
 
@@ -41,12 +45,26 @@ public final class FadeApplication extends Application {
 
         instance = this;
 
-        requestQueue = Volley.newRequestQueue(this);
+        setRequestQueue(this);
         imageLoader = new ImageLoader(requestQueue, new BitmapLruCache());
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         getMeFromPreferences();
+    }
+
+    /**
+     * Also used in small unit tests where we only have a context
+     *
+     * @param context
+     */
+    public static void setRequestQueue(final Context context) {
+        try {
+            HttpMessage.setAllowAllHostnameVerified();
+        }catch(final Exception e) {
+            MLog.e(TAG, "", e);
+        }
+        requestQueue = Volley.newRequestQueue(context);
     }
 
     private static User getMeFromPreferences() {

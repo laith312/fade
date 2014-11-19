@@ -1,20 +1,32 @@
 package com.messenger.fade.rest;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.messenger.fade.util.FadeLog;
+import com.android.volley.toolbox.StringRequest;
+import com.messenger.fade.util.NetworkUtil;
 
-import org.json.JSONObject;
+import java.util.Map;
 
-public class FadeDeleteRequest extends JsonObjectRequest {
+public class FadeDeleteRequest extends StringRequest {
 
     private static final String TAG = FadeDeleteRequest.class.getSimpleName();
 
-    public FadeDeleteRequest(String url, JSONObject jsonRequest, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener) {
+    private Map<String,String> mParams;
 
-        super(Request.Method.DELETE, url, jsonRequest, listener, errorListener);
+    public FadeDeleteRequest(final String url, final Map<String,String> params, final Response.Listener<String> responder, final Response.ErrorListener errorListener) {
 
-        FadeLog.d(TAG, "DELETE " + url + "  " + jsonRequest.toString());
+        super(Request.Method.DELETE, url, responder, errorListener);
+        mParams = params;
+
+        NetworkUtil.logToCurlRequest(this);
+
+    }
+
+
+    @Override
+    protected Map<String, String> getParams() throws AuthFailureError {
+
+        return mParams;
     }
 }

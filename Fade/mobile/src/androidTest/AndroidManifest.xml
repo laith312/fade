@@ -1,0 +1,14 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.messenger.fade" >
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <uses-sdk
+        android:minSdkVersion="14"/>
+
+    <application
+        android:icon="@null"
+        android:label="@null">
+    </application>
+
+</manifest>

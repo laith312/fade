@@ -26,7 +26,6 @@ public class FadePostRequest extends StringRequest {
 
     @Override
     protected Map<String, String> getParams() throws AuthFailureError {
-
         return mParams;
     }
 
