@@ -18,9 +18,7 @@ public final class FadeApi {
 
     private static final String TAG = FadeApi.class.getSimpleName();
 
-    public static final String API_RESULT_OK = "OK";
-    public static final String API_RESULT_FAIL = "fail";
-    public static final String API_RESULT_STATUS_KEY = "status";
+    public static final String API_RESULT_SUCCESS_KEY = "success";
     public static final String API_RESULT_DATA_KEY = "data";
     public static final String API_RESULT_DESCR_KEY = "descr";
 
@@ -45,8 +43,8 @@ public final class FadeApi {
     public static void saveUser(final Object cancelTag, final User user, final Response.Listener<String> listener, final Response.ErrorListener errorListener) {
 
         final HashMap<String, String> params = new HashMap<String, String>();
-        params.put("user", user.toJSON().toString());
-        final Request request = new FadePostRequest(API_BASE + "/user", params, listener, errorListener);
+        params.put("u", user.toJSON().toString());
+        final Request request = new FadePostRequest(API_BASE + "/u", params, listener, errorListener);
         request.setShouldCache(false).setRetryPolicy(DEFAULT_RETRY_POLICY).setTag(cancelTag);
         FadeApplication.getRequestQueue().add(request);
 
@@ -55,9 +53,9 @@ public final class FadeApi {
     public static void authenticateByUsername(final Object cancelTag, final String username, final String password, final Response.Listener<String> listener, final Response.ErrorListener errorListener) {
 
         final HashMap<String, String> params = new HashMap<String, String>();
-        params.put("username", username);
-        params.put("p", password);
-        final Request request = new FadePostRequest(API_BASE + "/auth", params, listener, errorListener);
+        params.put("r", username);
+        params.put("q", password);
+        final Request request = new FadePostRequest(API_BASE + "/ti", params, listener, errorListener);
         request.setShouldCache(false).setRetryPolicy(DEFAULT_RETRY_POLICY).setTag(cancelTag);
         FadeApplication.getRequestQueue().add(request);
     }
@@ -65,23 +63,23 @@ public final class FadeApi {
     public static void authenticateByEmail(final Object cancelTag, final String email, final String password, final Response.Listener<String> listener, final Response.ErrorListener errorListener) {
 
         final HashMap<String, String> params = new HashMap<String, String>();
-        params.put("email", email);
-        params.put("p", password);
-        final Request request = new FadePostRequest(API_BASE + "/auth", params, listener, errorListener);
+        params.put("y", email);
+        params.put("q", password);
+        final Request request = new FadePostRequest(API_BASE + "/ti", params, listener, errorListener);
         request.setShouldCache(false).setRetryPolicy(DEFAULT_RETRY_POLICY).setTag(cancelTag);
         FadeApplication.getRequestQueue().add(request);
     }
 
     public static void isUsernameExists(final Object cancelTag, final String username, final Response.Listener<JSONObject> listener, final Response.ErrorListener errorListener) {
 
-        final Request request = new FadeGetRequest(API_BASE + "/user/"+username, listener, errorListener);
+        final Request request = new FadeGetRequest(API_BASE + "/u/"+username, listener, errorListener);
         request.setShouldCache(false).setRetryPolicy(DEFAULT_RETRY_POLICY).setTag(cancelTag);
         FadeApplication.getRequestQueue().add(request);
     }
 
     public static void isEmailExists(final Object cancelTag, final String email, final Response.Listener<JSONObject> listener, final Response.ErrorListener errorListener) {
 
-        final Request request = new FadeGetRequest(API_BASE + "/email/"+email, listener, errorListener);
+        final Request request = new FadeGetRequest(API_BASE + "/e/"+email, listener, errorListener);
         request.setShouldCache(false).setRetryPolicy(DEFAULT_RETRY_POLICY).setTag(cancelTag);
         FadeApplication.getRequestQueue().add(request);
     }
@@ -101,7 +99,7 @@ public final class FadeApi {
 
     public static void saveIdentity(final Object cancelTag, final Identity identity, final Response.Listener<String> listener, final Response.ErrorListener errorListener) {
         final HashMap<String, String> params = new HashMap<String, String>();
-        params.put("identity", identity.toJSON().toString());
+        params.put("i", identity.toJSON().toString());
         final Request request = new FadePostRequest(API_BASE + "/i", params, listener, errorListener);
         request.setShouldCache(false).setRetryPolicy(DEFAULT_RETRY_POLICY).setTag(cancelTag);
         FadeApplication.getRequestQueue().add(request);
@@ -109,9 +107,31 @@ public final class FadeApi {
 
     public static void getUserById(final Object cancelTag, final long id, final Response.Listener<JSONObject> listener, final Response.ErrorListener errorListener) {
 
-        final Request request = new FadeGetRequest(API_BASE + "/user/"+id, listener, errorListener);
+        final Request request = new FadeGetRequest(API_BASE + "/u/"+id, listener, errorListener);
         request.setShouldCache(false).setRetryPolicy(DEFAULT_RETRY_POLICY).setTag(cancelTag);
         FadeApplication.getRequestQueue().add(request);
+    }
+
+    public static void getSettings(final Object cancelTag, final Response.Listener<JSONObject> listener, final Response.ErrorListener errorListener) {
+
+        final Request request = new FadeGetRequest(API_BASE + "/se", listener, errorListener);
+        request.setShouldCache(false).setRetryPolicy(DEFAULT_RETRY_POLICY).setTag(cancelTag);
+        FadeApplication.getRequestQueue().add(request);
+    }
+
+    /**
+     *
+     * @param cancelTag
+     * @param id - Identity id
+     * @param listener
+     * @param errorListener
+     */
+    public static void deleteIdentity(final Object cancelTag, final long id, final Response.Listener<String> listener, final Response.ErrorListener errorListener) {
+
+        final Request request = new FadeDeleteRequest(API_BASE + "/i?z="+id, listener, errorListener);
+        request.setShouldCache(false).setRetryPolicy(DEFAULT_RETRY_POLICY).setTag(cancelTag);
+        FadeApplication.getRequestQueue().add(request);
+
     }
 
 }

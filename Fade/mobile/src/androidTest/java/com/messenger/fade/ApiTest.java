@@ -33,7 +33,7 @@ public class ApiTest extends AndroidTestCase {
 
                         try {
                             final JSONObject response = new JSONObject(s);
-                            if (response.getString(FadeApi.API_RESULT_STATUS_KEY).equals(FadeApi.API_RESULT_OK)) {
+                            if (response.getBoolean(FadeApi.API_RESULT_SUCCESS_KEY)) {
                                 final User user = User.from(response.getJSONObject(FadeApi.API_RESULT_DATA_KEY));
 
                         /*
@@ -138,6 +138,29 @@ public class ApiTest extends AndroidTestCase {
                 try {
 
                     System.out.println("identity save response: "+s);
+                    _deleteIdentity(2, isFinished, isSuccess);
+
+                } catch (final Exception e) {
+                    e.printStackTrace();
+                    isFinished.set(true);
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(final VolleyError volleyError) {
+                System.out.println("volleyError: " + volleyError);
+                isFinished.set(true);
+            }
+        });
+    }
+
+    private void _deleteIdentity(final long id, final AtomicBoolean isFinished, final AtomicBoolean isSuccess) {
+        FadeApi.deleteIdentity("", id, new Response.Listener<String>() {
+            @Override
+            public void onResponse(final String s) {
+                try {
+
+                    System.out.println("identity delete response: "+s);
                     isSuccess.set(true);
                     isFinished.set(true);
 
