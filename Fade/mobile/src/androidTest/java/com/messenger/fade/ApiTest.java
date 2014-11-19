@@ -138,7 +138,15 @@ public class ApiTest extends AndroidTestCase {
                 try {
 
                     System.out.println("identity save response: "+s);
-                    _deleteIdentity(2, isFinished, isSuccess);
+                    //_deleteIdentity(2, isFinished, isSuccess);
+
+                    /*
+                     * remove calling delete identity after ensuring
+                     * it works fine.  don't want to accidentally delete
+                     * anything to trip us up later.
+                     */
+                    isSuccess.set(true);
+                    isFinished.set(true);
 
                 } catch (final Exception e) {
                     e.printStackTrace();

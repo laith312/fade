@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.messenger.fade" >
+    package="com.messenger.fade.test" >
 
     <uses-permission android:name="android.permission.INTERNET"/>
 
@@ -8,7 +8,7 @@
 
     <application
         android:icon="@null"
-        android:label="@null">
+        android:label="fade unit test runner">
     </application>
 
 </manifest>
