@@ -32,6 +32,9 @@ public final class FadeApi {
             DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
 
     /**
+     * Remember to call FadeApplication.setMe(user) after receiving the
+     * saved user in the response.
+     *
      * Remember to pass in the calling activity or fragment as the tag
      * so you can cancel the request onDestroy
      *
@@ -50,6 +53,11 @@ public final class FadeApi {
 
     }
 
+    /**
+     * Remember to call FadeApplication.setMe(user) after receiving the
+     * saved user in the response.
+     *
+     */
     public static void authenticateByUsername(final Object cancelTag, final String username, final String password, final Response.Listener<String> listener, final Response.ErrorListener errorListener) {
 
         final HashMap<String, String> params = new HashMap<String, String>();
