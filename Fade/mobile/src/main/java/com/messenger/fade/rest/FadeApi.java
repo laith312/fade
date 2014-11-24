@@ -34,7 +34,7 @@ public final class FadeApi {
     /**
      * Remember to call FadeApplication.setMe(user) after receiving the
      * saved user in the response.
-     *
+     * <p/>
      * Remember to pass in the calling activity or fragment as the tag
      * so you can cancel the request onDestroy
      *
@@ -56,7 +56,6 @@ public final class FadeApi {
     /**
      * Remember to call FadeApplication.setMe(user) after receiving the
      * saved user in the response.
-     *
      */
     public static void authenticateByUsername(final Object cancelTag, final String username, final String password, final Response.Listener<String> listener, final Response.ErrorListener errorListener) {
 
@@ -80,14 +79,14 @@ public final class FadeApi {
 
     public static void isUsernameExists(final Object cancelTag, final String username, final Response.Listener<JSONObject> listener, final Response.ErrorListener errorListener) {
 
-        final Request request = new FadeGetRequest(API_BASE + "/u/"+username, listener, errorListener);
+        final Request request = new FadeGetRequest(API_BASE + "/u/" + username, listener, errorListener);
         request.setShouldCache(false).setRetryPolicy(DEFAULT_RETRY_POLICY).setTag(cancelTag);
         FadeApplication.getRequestQueue().add(request);
     }
 
     public static void isEmailExists(final Object cancelTag, final String email, final Response.Listener<JSONObject> listener, final Response.ErrorListener errorListener) {
 
-        final Request request = new FadeGetRequest(API_BASE + "/e/"+email, listener, errorListener);
+        final Request request = new FadeGetRequest(API_BASE + "/e/" + email, listener, errorListener);
         request.setShouldCache(false).setRetryPolicy(DEFAULT_RETRY_POLICY).setTag(cancelTag);
         FadeApplication.getRequestQueue().add(request);
     }
@@ -100,7 +99,7 @@ public final class FadeApi {
      * @param errorListener
      */
     public static void getIdentities(final Object cancelTag, final long userid, final Response.Listener<JSONObject> listener, final Response.ErrorListener errorListener) {
-        final Request request = new FadeGetRequest(API_BASE + "/i/"+userid, listener, errorListener);
+        final Request request = new FadeGetRequest(API_BASE + "/i/" + userid, listener, errorListener);
         request.setShouldCache(false).setRetryPolicy(DEFAULT_RETRY_POLICY).setTag(cancelTag);
         FadeApplication.getRequestQueue().add(request);
     }
@@ -115,7 +114,7 @@ public final class FadeApi {
 
     public static void getUserById(final Object cancelTag, final long id, final Response.Listener<JSONObject> listener, final Response.ErrorListener errorListener) {
 
-        final Request request = new FadeGetRequest(API_BASE + "/u/"+id, listener, errorListener);
+        final Request request = new FadeGetRequest(API_BASE + "/u/" + id, listener, errorListener);
         request.setShouldCache(false).setRetryPolicy(DEFAULT_RETRY_POLICY).setTag(cancelTag);
         FadeApplication.getRequestQueue().add(request);
     }
@@ -128,18 +127,33 @@ public final class FadeApi {
     }
 
     /**
-     *
      * @param cancelTag
-     * @param id - Identity id
+     * @param id            - Identity id
      * @param listener
      * @param errorListener
      */
     public static void deleteIdentity(final Object cancelTag, final long id, final Response.Listener<String> listener, final Response.ErrorListener errorListener) {
 
-        final Request request = new FadeDeleteRequest(API_BASE + "/i?z="+id, listener, errorListener);
+        final Request request = new FadeDeleteRequest(API_BASE + "/i?z=" + id, listener, errorListener);
         request.setShouldCache(false).setRetryPolicy(DEFAULT_RETRY_POLICY).setTag(cancelTag);
         FadeApplication.getRequestQueue().add(request);
 
     }
 
+    /**
+     * Deletes file from S3
+     *
+     * @param cancelTag
+     * @param bucket - S3 bucket
+     * @param key - the key
+     * @param listener
+     * @param errorListener
+     */
+    public static void deleteFile(final Object cancelTag, final String bucket, final String key, final Response.Listener<String> listener, final Response.ErrorListener errorListener) {
+
+        final Request request = new FadeDeleteRequest(API_BASE + "/f?b=" + bucket + "&k=" + key, listener, errorListener);
+        request.setShouldCache(false).setRetryPolicy(DEFAULT_RETRY_POLICY).setTag(cancelTag);
+        FadeApplication.getRequestQueue().add(request);
+
+    }
 }

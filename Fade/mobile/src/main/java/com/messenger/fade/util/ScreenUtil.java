@@ -32,9 +32,9 @@ import com.messenger.fade.R;
  * @author petey
  * 
  */
-public final class Screen {
+public final class ScreenUtil {
 	
-	private Screen() {}
+	private ScreenUtil() {}
 
 	public static final int SCREEN_DENSITY_LOW = 120,
 							SCREEN_DENSITY_MEDIUM = 160,
