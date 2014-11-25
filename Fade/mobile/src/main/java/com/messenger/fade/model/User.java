@@ -6,16 +6,16 @@ import java.sql.Timestamp;
 
 public final class User extends DomainObject {
 	
-	private long id;
+	private int id;
 	private String username;
 	private String password;
 	private String fullname;
 	private String email;
 	private String website;
-	private int age=18;
+	private byte age=18;
 	private String gender;
 	private String bio;
-	private int locationVisibility=1;
+	private byte locationVisibility=1;
 	private Timestamp tstamp;
 	private int followsCount;
 	private int followersCount;
@@ -24,7 +24,7 @@ public final class User extends DomainObject {
 	private double lon;
 	private int mediaCount;
 	private String profilePicUrl;
-	private int privacyLevel;
+	private byte privacyLevel;
 
 	public User() {
 		super();
@@ -48,11 +48,11 @@ public final class User extends DomainObject {
 		this.lon = lon;
 	}
 
-	public long getId() {
+	public int getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 
@@ -114,11 +114,11 @@ public final class User extends DomainObject {
 		this.website = website;
 	}
 
-	public int getAge() {
+	public byte getAge() {
 		return age;
 	}
 
-	public void setAge(int age) {
+	public void setAge(byte age) {
 		this.age = age;
 	}
 
@@ -141,11 +141,11 @@ public final class User extends DomainObject {
 		this.bio = bio;
 	}
 
-	public int getLocationVisibility() {
+	public byte getLocationVisibility() {
 		return locationVisibility;
 	}
 
-	public void setLocationVisibility(int locationVisibility) {
+	public void setLocationVisibility(byte locationVisibility) {
 		this.locationVisibility = locationVisibility;
 	}
 
@@ -233,18 +233,18 @@ public final class User extends DomainObject {
 		return 0;
 	}
 
-	public int getPrivacyLevel() {
+	public byte getPrivacyLevel() {
 		return privacyLevel;
 	}
 
-	public void setPrivacyLevel(int privacyLevel) {
+	public void setPrivacyLevel(byte privacyLevel) {
 		this.privacyLevel = privacyLevel;
 	}
 	
 	public static User from(final JSONObject object) {
 		final User user = new User();
-		user.setAge(object.optInt("age"));
-		user.setId(object.optLong("id"));
+		user.setAge((byte)object.optInt("age"));
+		user.setId(object.optInt("id"));
 		user.setUsername(object.optString("username"));
 		user.setFullname(object.optString("fullname"));
 		user.setEmail(object.optString("email"));
@@ -252,8 +252,8 @@ public final class User extends DomainObject {
 		user.setGender(object.optString("gender"));
 		user.setLocation(object.optString("location"));
 		user.setBio(object.optString("bio"));
-		user.setLocationVisibility(object.optInt("locationVisibility"));
-		user.setPrivacyLevel(object.optInt("privacyLevel"));
+		user.setLocationVisibility((byte)object.optInt("locationVisibility"));
+		user.setPrivacyLevel((byte)object.optInt("privacyLevel"));
 		user.setFollowersCount(object.optInt("followersCount"));
 		user.setFollowsCount(object.optInt("followsCount"));
 		user.setLat(object.optDouble("lat"));

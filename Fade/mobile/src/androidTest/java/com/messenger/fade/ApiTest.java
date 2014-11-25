@@ -112,7 +112,7 @@ public class ApiTest extends AndroidTestCase {
                 try {
                     final JSONArray array = jsonObject.getJSONArray(FadeApi.API_RESULT_DATA_KEY);
                     final Identity identity = Identity.from(array.getJSONObject(0));
-                    identity.setStatus(2);
+                    identity.setStatus((byte)2);
                     identity.setThirdPartyId("3rdPartyIdUnitTest");
                     _saveIdentity(identity, isFinished, isSuccess);
 

@@ -1,8 +1,8 @@
 package com.messenger.fade.model;
 
-import java.sql.Timestamp;
-
 import org.json.JSONObject;
+
+import java.sql.Timestamp;
 
 /**
  * each User object can have one or more identities,
@@ -19,12 +19,12 @@ public final class Identity extends DomainObject{
 	public static final int IDENTITY_TWITTER = 3;
 	public static final int IDENTITY_KIK = 4;
 	
-	private long id;
-	private long userId;
-	private int type;
+	private int id;
+	private int userId;
+	private byte type;
 	private String accessToken;
 	private String tokenSecret;
-	private int status;
+	private byte status;
 	private String email;
 	private String username;
 	private String thirdPartyId;
@@ -38,22 +38,22 @@ public final class Identity extends DomainObject{
 	private static final long serialVersionUID = 3121394108242111220L;
 	
 	
-	public long getId() {
+	public int getId() {
 		return id;
 	}
-	public void setId(long id) {
+	public void setId(int id) {
 		this.id = id;
 	}
-	public long getUserId() {
+	public int getUserId() {
 		return userId;
 	}
-	public void setUserId(long userId) {
+	public void setUserId(int userId) {
 		this.userId = userId;
 	}
-	public int getType() {
+	public byte getType() {
 		return type;
 	}
-	public void setType(int type) {
+	public void setType(byte type) {
 		this.type = type;
 	}
 	public String getAccessToken() {
@@ -68,10 +68,10 @@ public final class Identity extends DomainObject{
 	public void setTokenSecret(String tokenSecret) {
 		this.tokenSecret = tokenSecret;
 	}
-	public int getStatus() {
+	public byte getStatus() {
 		return status;
 	}
-	public void setStatus(int status) {
+	public void setStatus(byte status) {
 		this.status = status;
 	}
 	public Timestamp getTstamp() {
@@ -104,11 +104,11 @@ public final class Identity extends DomainObject{
 		identity.setAccessToken(object.optString("accessToken"));
 		identity.setTokenSecret(object.optString("tokenSecret"));
 		identity.setEmail(object.optString("email"));
-		identity.setId(object.optLong("id"));
-		identity.setStatus(object.optInt("status"));
+		identity.setId(object.optInt("id"));
+		identity.setStatus((byte)object.optInt("status"));
 		identity.setThirdPartyId(object.optString("thirdPartyId"));
-		identity.setType(object.optInt("type"));
-		identity.setUserId(object.optLong("userId"));
+		identity.setType((byte)object.optInt("type"));
+		identity.setUserId(object.optInt("userId"));
 		identity.setUsername(object.optString("username"));
 		return identity;
 	}	
