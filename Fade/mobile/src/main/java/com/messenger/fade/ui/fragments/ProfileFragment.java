@@ -9,8 +9,10 @@ import android.view.ViewGroup;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageLoader;
 import com.androidquery.AQuery;
 import com.messenger.fade.R;
+import com.messenger.fade.application.FadeApplication;
 import com.messenger.fade.model.UserMedia;
 import com.messenger.fade.photo.PhotoChooser;
 import com.messenger.fade.rest.FadeApi;
@@ -36,7 +38,26 @@ public class ProfileFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         final AQuery a = new AQuery(getView());
-        a.id(R.id.profile_image).clicked(this, "onProfileClicked");
+        a.id(R.id.full_name).clicked(this, "addPhotoToGallery");
+        a.id(R.id.profile_image).clicked(this, "updateProfilePic");
+        setUserProfilePic();
+    }
+
+    private void setUserProfilePic() {
+
+        final AQuery a = new AQuery(getView());
+
+        FadeApplication.getImageLoader().get("http://dp.fade.s3.amazonaws.com/1.jpg", new ImageLoader.ImageListener() {
+            @Override
+            public void onResponse(ImageLoader.ImageContainer imageContainer, boolean b) {
+                a.id(R.id.profile_image).image(imageContainer.getBitmap());
+            }
+
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                MLog.i(TAG, "onErrorResponse(): file complete: " +volleyError.toString());
+            }
+        });
     }
 
     @Override
@@ -49,7 +70,45 @@ public class ProfileFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    public void onProfileClicked() {
+    public void updateProfilePic() {
+        photoChooser = new PhotoChooser(getActivity()) {
+            @Override
+            public void onPhotoReady(final File pic) {
+
+                MLog.i(TAG, "onPhotoReady(): " + pic.getPath());
+                FadeApi.saveUserDisplayPic(pic,1,new FileUploader.ProgressListener() {
+                    @Override
+                    public void onProgress(int percentComplete) {
+                        MLog.i(TAG, "file post: " + percentComplete + "%");
+                    }
+                }, new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(final String s) {
+                        MLog.i(TAG, "onResponse(): file complete: " +s);
+                        setUserProfilePic();
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError volleyError) {
+                        MLog.i(TAG, "onErrorResponse(): file complete: " +volleyError.toString());
+                    }
+                });
+            }
+
+            @Override
+            public void startIndProgressForPhotoProcessing() {
+                //TODO
+            }
+
+            @Override
+            public void dismissIndProgressForPhotoProcessing() {
+                //TODO
+            }
+        };
+        photoChooser.startPhotoChoosingActivityFromFragment(this);
+    }
+
+    public void addPhotoToGallery() {
         photoChooser = new PhotoChooser(getActivity()) {
             @Override
             public void onPhotoReady(final File pic) {
@@ -80,12 +139,12 @@ public class ProfileFragment extends Fragment {
 
             @Override
             public void startIndProgressForPhotoProcessing() {
-
+                //TODO
             }
 
             @Override
             public void dismissIndProgressForPhotoProcessing() {
-
+                //TODO
             }
         };
         photoChooser.startPhotoChoosingActivityFromFragment(this);
@@ -94,6 +153,7 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        photoChooser.onDestroy();
+        if (photoChooser != null)
+            photoChooser.onDestroy();
     }
 }
