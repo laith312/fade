@@ -63,11 +63,6 @@ public class FadeNavActivity extends Activity
             case 3:
                 newFragment = new ChatFragment();
                 break;
-            case 4:
-                Intent i = new Intent(this, SettingsActivity.class);
-                startActivity(i);
-                return;
-            //newFragment = new SettingsFragmentX();
 
             default:
                 newFragment = new ProfileFragment();
@@ -91,9 +86,6 @@ public class FadeNavActivity extends Activity
                 break;
             case 4:
                 mTitle = getString(R.string.title_section4);
-                break;
-            case 5:
-                mTitle = getString(R.string.title_section5);
                 break;
         }
     }
