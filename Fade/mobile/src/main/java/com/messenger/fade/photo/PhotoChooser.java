@@ -1,6 +1,7 @@
 package com.messenger.fade.photo;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -8,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
+import android.support.v4.app.Fragment;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -28,14 +30,13 @@ import java.io.File;
  *
  * @author kevin
  */
-public abstract class PhotoChoosingActivity extends Activity {
+public abstract class PhotoChooser {
 
-
-    private static final String TAG = PhotoChoosingActivity.class.getName();
+    private static final String TAG = PhotoChooser.class.getSimpleName();
     private DisplayMetrics DISPLAY_METRICS = new DisplayMetrics();
 
-    private static final int REQUEST_SELECT_PHOTO = 388;
-    private static final int REQUEST_SNAP_A_PHOTO = 389;
+    public static final int ACTIVITY_REQUEST_SELECT_PHOTO = 388;
+    public static final int ACTIVITY_REQUEST_SNAP_A_PHOTO = 389;
 
     private static final int EVENT_SEL_PHOTO_WRITTEN_TO_DISK = 0;
     private static final int EVENT_SEL_PHOTO_ERROR = 2;
@@ -45,32 +46,30 @@ public abstract class PhotoChoosingActivity extends Activity {
 
     private Bitmap photo;
     private File photoFile;
-    private PhotoChoosingActivity _this = this;
     private int maxPhotoSize = 450000;
     private String photoFilePath;
+    private Context context;
 
-    @Override
+    public PhotoChooser(final Context context) {
+        this.context = context;
+    }
+
     public void onCreate(final Bundle savedInstanceState) {
 
-        super.onCreate(savedInstanceState);
+        ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getMetrics(DISPLAY_METRICS);
 
-        ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay().getMetrics(DISPLAY_METRICS);
-
-        photoFilePath = getCacheDir().getPath() + "/photo.jpg";
+        photoFilePath = context.getCacheDir().getPath() + "/photo.jpg";
         photoFile = new File(photoFilePath);
     }
 
-    @Override
     public void onActivityResult(final int requestCode, final int resultCode, final Intent intent) {
 
         MLog.i(TAG, "onActivityResult() resultCode=" + (resultCode == Activity.RESULT_OK) + " requestCode == " + requestCode);
 
-        super.onActivityResult(requestCode, resultCode, intent);
-
-        if (requestCode == REQUEST_SELECT_PHOTO && resultCode == Activity.RESULT_OK) {
+        if (requestCode == ACTIVITY_REQUEST_SELECT_PHOTO && resultCode == Activity.RESULT_OK) {
             final Uri uri = intent.getData();
             preProcessPhoto(uri);
-        } else if (requestCode == REQUEST_SNAP_A_PHOTO && resultCode == Activity.RESULT_OK) {
+        } else if (requestCode == ACTIVITY_REQUEST_SNAP_A_PHOTO && resultCode == Activity.RESULT_OK) {
             final File file = new File(photoFilePath);
             final Uri uri = Uri.fromFile(file);
             preProcessPhoto(uri);
@@ -88,12 +87,20 @@ public abstract class PhotoChoosingActivity extends Activity {
         this.maxPhotoSize = maxPhotoSize;
     }
 
-    public void startPhotoChoosingActivity() {
-
+    private Intent getPhotoChoosingIntent() {
         final Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "Select Picture"), REQUEST_SELECT_PHOTO);
+        return intent;
+    }
+    public void startPhotoChoosingActivityFromFragment(final Fragment fragment) {
+        final Intent intent = getPhotoChoosingIntent();
+        fragment.startActivityForResult(Intent.createChooser(intent, "Select Picture"), ACTIVITY_REQUEST_SELECT_PHOTO);
+    }
+
+    public void startPhotoChoosingActivityFromActivity(final Activity activity) {
+        final Intent intent = getPhotoChoosingIntent();
+        activity.startActivityForResult(Intent.createChooser(intent, "Select Picture"), ACTIVITY_REQUEST_SELECT_PHOTO);
     }
 
     private void preProcessPhotoRetryable(final Uri uri) throws Exception {
@@ -102,7 +109,7 @@ public abstract class PhotoChoosingActivity extends Activity {
             photo.recycle();
         }
 
-        photo = ImageUtil.getBitmap(this, uri, maxPhotoSize);
+        photo = ImageUtil.getBitmap(context, uri, maxPhotoSize);
 
         if (photo != null) {
             ImageUtil.writeBitmapToFile(photo, photoFilePath);
@@ -165,7 +172,7 @@ public abstract class PhotoChoosingActivity extends Activity {
 
             } else {
                 //TODO: localize strings
-                Toast.makeText(_this, "Oops sorry!  Request failed.  Please try again.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Oops sorry!  Request failed.  Please try again.", Toast.LENGTH_SHORT).show();
             }
         }
     };
@@ -269,7 +276,7 @@ public abstract class PhotoChoosingActivity extends Activity {
 
                 case EVENT_SEL_PHOTO_ERROR:
                     //TODO localize
-                    Toast.makeText(_this, "Error selecting photo. Please try again.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Error selecting photo. Please try again.", Toast.LENGTH_SHORT).show();
                     break;
             }
         }
@@ -295,10 +302,15 @@ public abstract class PhotoChoosingActivity extends Activity {
 
     }
 
-    @Override
     public void onDestroy() {
         recycle();
-        super.onDestroy();
+    }
+
+    private Intent getPhotoShootingIntent() {
+        deleteTempFromDisk();
+        final Intent takePictureFromCameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        takePictureFromCameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(photoFilePath)));
+        return takePictureFromCameraIntent;
     }
 
     /**
@@ -306,12 +318,12 @@ public abstract class PhotoChoosingActivity extends Activity {
      * android.provider.MediaStore.ACTION_IMAGE_CAPTURE does not work on my G1
      * with the latest cyan and 1.6.
      */
-    public void startPhotoShootingActivity() {
+    public void startPhotoShootingActivityFromActivity(final Activity activity) {
+        activity.startActivityForResult(getPhotoShootingIntent(), ACTIVITY_REQUEST_SNAP_A_PHOTO);
+    }
 
-        deleteTempFromDisk();
-        final Intent takePictureFromCameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        takePictureFromCameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(photoFilePath)));
-        startActivityForResult(takePictureFromCameraIntent, REQUEST_SNAP_A_PHOTO);
+    public void startPhotoShootingActivityFromFragment(final Fragment fragment) {
+        fragment.startActivityForResult(getPhotoShootingIntent(), ACTIVITY_REQUEST_SNAP_A_PHOTO);
     }
 
     private void deleteTempFromDisk() {
