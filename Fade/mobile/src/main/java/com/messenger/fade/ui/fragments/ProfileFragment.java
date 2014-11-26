@@ -40,16 +40,22 @@ public class ProfileFragment extends Fragment {
         final AQuery a = new AQuery(getView());
         a.id(R.id.full_name).clicked(this, "addPhotoToGallery");
         a.id(R.id.profile_image).clicked(this, "updateProfilePic");
-        setUserProfilePic();
+        setUserProfilePic(true);
     }
 
-    private void setUserProfilePic() {
+    private void setUserProfilePic(final boolean isUseCachedBitmap) {
 
         final AQuery a = new AQuery(getView());
 
-        FadeApplication.getImageLoader().get("http://dp.fade.s3.amazonaws.com/1.jpg", new ImageLoader.ImageListener() {
+        final String profilePicUrl = "http://dp.fade.s3.amazonaws.com/1.jpg";
+
+        if (!isUseCachedBitmap)
+            FadeApplication.getBitmapLruCache().removeBitmap(profilePicUrl);
+
+        FadeApplication.getImageLoader().get(profilePicUrl, new ImageLoader.ImageListener() {
             @Override
-            public void onResponse(ImageLoader.ImageContainer imageContainer, boolean b) {
+            public void onResponse(final ImageLoader.ImageContainer imageContainer, final boolean b) {
+                MLog.i(TAG, "image loader response. b: " + b + " " + imageContainer.getRequestUrl() + " setting bitmap");
                 a.id(R.id.profile_image).image(imageContainer.getBitmap());
             }
 
@@ -85,7 +91,7 @@ public class ProfileFragment extends Fragment {
                     @Override
                     public void onResponse(final String s) {
                         MLog.i(TAG, "onResponse(): file complete: " +s);
-                        setUserProfilePic();
+                        setUserProfilePic(false);
                     }
                 }, new Response.ErrorListener() {
                     @Override

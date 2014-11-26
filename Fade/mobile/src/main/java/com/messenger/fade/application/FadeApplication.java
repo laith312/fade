@@ -26,6 +26,7 @@ public final class FadeApplication extends Application {
 
     private static RequestQueue requestQueue;
     private static ImageLoader imageLoader;
+    private static BitmapLruCache bitmapLruCache;
 
     private static FadeApplication instance;
 
@@ -46,7 +47,8 @@ public final class FadeApplication extends Application {
         instance = this;
 
         setRequestQueue(this);
-        imageLoader = new ImageLoader(requestQueue, new BitmapLruCache());
+        bitmapLruCache = new BitmapLruCache();
+        imageLoader = new ImageLoader(requestQueue, bitmapLruCache);
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
@@ -118,6 +120,10 @@ public final class FadeApplication extends Application {
 
     public static RequestQueue getRequestQueue() {
         return requestQueue;
+    }
+
+    public static BitmapLruCache getBitmapLruCache() {
+        return bitmapLruCache;
     }
 
     public static ImageLoader getImageLoader() {
