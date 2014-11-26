@@ -202,7 +202,15 @@ public final class User extends DomainObject {
 	}
 
 	public String getProfilePicUrl() {
-		return profilePicUrl;
+        /*
+         * for simplicity sake, assume the user display pic is always
+         * at http://dp.fade.s3.amazonaws.com/<userid>.jpg
+         *
+         * if resource is not actually there, just assume some default
+         * display pic via image loader.
+         */
+        //return profilePicUrl;
+        return "http://dp.fade.s3.amazonaws.com/"+id+".jpg";
 	}
 
 	public void setProfilePicUrl(String profilePicUrl) {

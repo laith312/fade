@@ -3,12 +3,16 @@ package com.messenger.fade.rest;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.messenger.fade.application.FadeApplication;
 import com.messenger.fade.model.Identity;
 import com.messenger.fade.model.User;
+import com.messenger.fade.model.UserMedia;
+import com.messenger.fade.util.FileUploader;
 
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.HashMap;
 
 /**
@@ -51,6 +55,131 @@ public final class FadeApi {
         request.setShouldCache(false).setRetryPolicy(DEFAULT_RETRY_POLICY).setTag(cancelTag);
         FadeApplication.getRequestQueue().add(request);
 
+    }
+
+    /**
+     * Saves user display pic to S3.
+     * <p/>
+     * It is assumed that user.getProfilePicUrl() will always return
+     * http://dp.fade.s3.amazonaws.com/[userid].jpg
+     *
+     * @param imageFile
+     * @param userid
+     * @param progressListener - optional. so you can track progress, for small
+     *                         files probably isn't necessary.
+     * @param responseListener - optional. standard response listener when upload is finished
+     * @param errorListener    - optional. standard error listener.
+     * @return - FileUploader object, so you can cancel the request, if you want.
+     */
+    public static FileUploader saveUserDisplayPic(final File imageFile, final int userid, final FileUploader.ProgressListener progressListener, final Response.Listener<String> responseListener, final Response.ErrorListener errorListener) {
+
+        final FileUploader f = new FileUploader();
+        f.postFile(userid + ".jpg", imageFile, "dp.fade", progressListener, responseListener, errorListener);
+        return f;
+    }
+
+    /**
+     * Adds photo to user image gallery.
+     *
+     * Several steps:
+     * 1) gets the next available image slot # for user
+     * 2) saves file to S3
+     * 3) saves UserMedia object to server
+     *
+     * @param cancelTag
+     * @param imageFile
+     * @param media
+     * @param progressListener
+     * @param responseListener
+     * @param errorListener
+     * @return
+     */
+    public static FileUploader saveUserMediaToGallery(final Object cancelTag, final File imageFile, final UserMedia media, final FileUploader.ProgressListener progressListener, final Response.Listener<String> responseListener, final Response.ErrorListener errorListener) {
+
+        final FileUploader f = new FileUploader();
+        //first, get the next available photo slot (nextMedia)
+        final Request request = new FadeGetRequest(API_BASE + "/m?n=x&b=" + media.getUserid(), new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(final JSONObject jsonObject) {
+
+                if (!jsonObject.optBoolean(API_RESULT_SUCCESS_KEY, false)) {
+                    errorListener.onErrorResponse(new VolleyError("save failed. could not get nextMedia"));
+                    return;
+                }
+
+                media.setNum((short) jsonObject.optJSONObject("data").optInt("nextMedia"));
+
+                //now store file in S3
+                f.postFile("" + media.getUserid() + '_' + media.getNum() + ".jpg", imageFile, "pics.fade", progressListener,
+                        new Response.Listener<String>() {
+                            @Override
+                            public void onResponse(final String s) {
+                                try {
+                                    final JSONObject postFileResponse = new JSONObject(s);
+
+                                    if (!postFileResponse.optBoolean(API_RESULT_SUCCESS_KEY, false)) {
+                                        errorListener.onErrorResponse(new VolleyError("failed to post file"));
+                                    }
+
+                                    final HashMap<String, String> params = new HashMap<String, String>();
+                                    params.put("f", media.toJSON().toString());
+                                    final Request postRequest = new FadePostRequest(API_BASE + "/m", params, responseListener, errorListener);
+                                    postRequest.setShouldCache(false).setRetryPolicy(DEFAULT_RETRY_POLICY).setTag(cancelTag);
+                                    FadeApplication.getRequestQueue().add(postRequest);
+
+                                } catch (final Exception e) {
+                                    errorListener.onErrorResponse(new VolleyError(e));
+                                }
+
+                            }
+                        },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(final VolleyError volleyError) {
+                                errorListener.onErrorResponse(volleyError);
+                            }
+                        });
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(final VolleyError volleyError) {
+                errorListener.onErrorResponse(volleyError);
+            }
+        });
+        request.setShouldCache(false).setRetryPolicy(DEFAULT_RETRY_POLICY).setTag(cancelTag);
+        FadeApplication.getRequestQueue().add(request);
+        return f;
+    }
+
+    /**
+     * Fetches a jsonarray of most recently posted UserMedia objects.
+     *
+     * @param cancelTag
+     * @param userid
+     * @param floorid       - id of the last UserMedia object in the previously returned list
+     * @param count         - for paging; recommendation is around 30
+     * @param listener
+     * @param errorListener
+     */
+    public void getUserMedia(final Object cancelTag, final int userid, final int floorid, final int count, final Response.Listener<JSONObject> listener, final Response.ErrorListener errorListener) {
+        final Request request = new FadeGetRequest(API_BASE + "/m?n=a&b=" + userid + "&g=" + count + "&k=" + floorid, listener, errorListener);
+        request.setShouldCache(false).setRetryPolicy(DEFAULT_RETRY_POLICY).setTag(cancelTag);
+        FadeApplication.getRequestQueue().add(request);
+    }
+
+    /**
+     * Fetches the "mediaCount" of the user, which is the total # of media objects saved by the user.
+     * Useful for displaying on a user's profile page.
+     *
+     * @param cancelTag
+     * @param userid
+     * @param listener
+     * @param errorListener
+     */
+    public void getUserMediaCount(final Object cancelTag, final int userid, final Response.Listener<JSONObject> listener, final Response.ErrorListener errorListener) {
+        final Request request = new FadeGetRequest(API_BASE + "/m?n=w&b=" + userid, listener, errorListener);
+        request.setShouldCache(false).setRetryPolicy(DEFAULT_RETRY_POLICY).setTag(cancelTag);
+        FadeApplication.getRequestQueue().add(request);
     }
 
     /**
@@ -144,8 +273,8 @@ public final class FadeApi {
      * Deletes file from S3
      *
      * @param cancelTag
-     * @param bucket - S3 bucket
-     * @param key - the key
+     * @param bucket        - S3 bucket
+     * @param key           - the key
      * @param listener
      * @param errorListener
      */

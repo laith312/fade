@@ -1,4 +1,4 @@
-package com.messenger.fade;
+package com.messenger.fade.photo;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -77,6 +77,13 @@ public abstract class PhotoChoosingActivity extends Activity {
         }
     }
 
+    /**
+     * For thumbnails/avatars you may want a size less than 200k.
+     *
+     * For larger photos, 450000 is recommended.
+     *
+     * @param maxPhotoSize - in bytes
+     */
     public void setMaxPhotoSize(final int maxPhotoSize) {
         this.maxPhotoSize = maxPhotoSize;
     }
