@@ -9,6 +9,7 @@ import com.messenger.fade.model.Identity;
 import com.messenger.fade.model.User;
 import com.messenger.fade.model.UserMedia;
 import com.messenger.fade.util.FileUploader;
+import com.messenger.fade.util.MLog;
 
 import org.json.JSONObject;
 
@@ -147,6 +148,7 @@ public final class FadeApi {
             }
         });
         request.setShouldCache(false).setRetryPolicy(DEFAULT_RETRY_POLICY).setTag(cancelTag);
+        MLog.i(TAG, "FadeApplication.getRequestQueue() "+FadeApplication.getRequestQueue());
         FadeApplication.getRequestQueue().add(request);
         return f;
     }

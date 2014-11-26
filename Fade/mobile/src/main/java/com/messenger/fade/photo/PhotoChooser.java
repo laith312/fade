@@ -1,15 +1,14 @@
 package com.messenger.fade.photo;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
-import android.support.v4.app.Fragment;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -51,11 +50,8 @@ public abstract class PhotoChooser {
     private Context context;
 
     public PhotoChooser(final Context context) {
+
         this.context = context;
-    }
-
-    public void onCreate(final Bundle savedInstanceState) {
-
         ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getMetrics(DISPLAY_METRICS);
 
         photoFilePath = context.getCacheDir().getPath() + "/photo.jpg";
@@ -105,6 +101,7 @@ public abstract class PhotoChooser {
 
     private void preProcessPhotoRetryable(final Uri uri) throws Exception {
 
+        MLog.i(TAG, "preProcessPhotoRetryable() uri: " + uri.getPath());
         if (photo != null) {
             photo.recycle();
         }
@@ -115,7 +112,9 @@ public abstract class PhotoChooser {
             ImageUtil.writeBitmapToFile(photo, photoFilePath);
             photoFile = new File(photoFilePath);
             _photoSelectionHandler.sendEmptyMessage(EVENT_SEL_PHOTO_WRITTEN_TO_DISK);
+            MLog.i(TAG, "preProcessPhotoRetryable() success");
         } else {
+            MLog.i(TAG, "preProcessPhotoRetryable() fail");
             throw new Exception("Failed to get photo");
         }
     }
@@ -130,7 +129,7 @@ public abstract class PhotoChooser {
      */
     private void preProcessPhoto(final Uri uri) {
 
-        startIndeterminateProgressForPhoto();
+        startIndProgressForPhotoProcessing();
         ThreadWrapper.executeInWorkerThread(new Runnable() {
             @Override
             public void run() {
@@ -150,7 +149,7 @@ public abstract class PhotoChooser {
                 } catch (final Exception e) {
                     msg.what = EVENT_SEL_PHOTO_ERROR;
                     msg.obj = e.getMessage() + "";
-                    MLog.i(TAG, "preProcessPhoto() failed", e);
+                    MLog.i(TAG, "preProcessPhoto() failed: ", e);
                     _photoSelectionHandler.sendMessage(msg);
                 }
             }
@@ -162,7 +161,7 @@ public abstract class PhotoChooser {
         @Override
         public void handleMessage(final Message msg) {
 
-            dismissProgressDialogForPhoto();
+            dismissIndProgressForPhotoProcessing();
 
             MLog.i(TAG, "_photoDoneHandler msg.arg1 = " + msg.arg1);
 
@@ -242,7 +241,7 @@ public abstract class PhotoChooser {
      */
     private void postProcessPhoto() {
 
-        startIndeterminateProgressForPhoto();
+        startIndProgressForPhotoProcessing();
         ThreadWrapper.executeInWorkerThread(new Runnable() {
             @Override
             public void run() {
@@ -266,7 +265,7 @@ public abstract class PhotoChooser {
         @Override
         public void handleMessage(final Message msg) {
 
-            dismissProgressDialogForPhoto();
+            dismissIndProgressForPhotoProcessing();
 
             switch (msg.what) {
                 case EVENT_SEL_PHOTO_WRITTEN_TO_DISK:
@@ -304,6 +303,7 @@ public abstract class PhotoChooser {
 
     public void onDestroy() {
         recycle();
+        deleteTempFromDisk();
     }
 
     private Intent getPhotoShootingIntent() {
@@ -330,7 +330,7 @@ public abstract class PhotoChooser {
         photoFile.delete();
     }
 
-    abstract void dismissProgressDialogForPhoto();
+    public abstract void dismissIndProgressForPhotoProcessing();
 
-    abstract void startIndeterminateProgressForPhoto();
+    public abstract void startIndProgressForPhotoProcessing();
 }
