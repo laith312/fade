@@ -6,17 +6,24 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
+import com.google.android.gms.common.SignInButton;
+import com.messenger.fade.FadeConstants;
 import com.messenger.fade.R;
 
-public class SignInActivity extends BaseActivity {
+public class SignInActivity extends BaseActivity implements View.OnClickListener {
+    private TextView mLoginInfo;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //setContentView(R.layout.activity_sign_in);
 
-        Button signInButton = (Button) findViewById(R.id.sign_in_button);
+        final Button signInButton = (Button) findViewById(R.id.sign_in_button);
+        final SignInButton googleButton = (SignInButton) findViewById(R.id.google_sign_in_button);
+        mLoginInfo = (TextView) findViewById(R.id.login_info);
 
 
         signInButton.setOnClickListener(new View.OnClickListener() {
@@ -26,6 +33,8 @@ public class SignInActivity extends BaseActivity {
                 startActivity(i);
             }
         });
+
+        googleButton.setOnClickListener(this);
     }
 
     @Override
@@ -51,5 +60,31 @@ public class SignInActivity extends BaseActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onClick(final View view) {
+        if (view.getId() == R.id.google_sign_in_button) {
+            Intent intent = new Intent(this, GooglePlusLoginActivity.class);
+            startActivityForResult(intent, FadeConstants.REQUEST_CODE_GOOGLE_PLUS);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode != RESULT_OK) {
+            return;
+        }
+
+        if (requestCode == FadeConstants.REQUEST_CODE_GOOGLE_PLUS) {
+            // Login with 3rd party.
+
+            final String email = data.getStringExtra(FadeConstants.EXTRA_EMAIL);
+            final String token = data.getStringExtra(FadeConstants.EXTRA_ACCESS_TOKEN);
+
+            mLoginInfo.setText(email + " : " + token);
+        }
     }
 }
