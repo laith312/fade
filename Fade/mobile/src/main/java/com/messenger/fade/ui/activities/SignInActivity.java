@@ -8,9 +8,16 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.google.android.gms.common.SignInButton;
 import com.messenger.fade.FadeConstants;
 import com.messenger.fade.R;
+import com.messenger.fade.application.FadeApplication;
+import com.messenger.fade.model.User;
+import com.messenger.fade.rest.FadeApi;
+
+import org.json.JSONObject;
 
 public class SignInActivity extends BaseActivity implements View.OnClickListener {
     private TextView mLoginInfo;
@@ -19,9 +26,9 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_sign_in);
 
         final Button signInButton = (Button) findViewById(R.id.sign_in_button);
+        final TextView signUpTextView = (TextView) findViewById(R.id.sign_up_text);
         final SignInButton googleButton = (SignInButton) findViewById(R.id.google_sign_in_button);
         mLoginInfo = (TextView) findViewById(R.id.login_info);
 
@@ -29,7 +36,14 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(SignInActivity.this, FadeNavActivity.class);
+                userSignIn();
+            }
+        });
+
+        signUpTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(SignInActivity.this, RegistrationActivity.class);
                 startActivity(i);
             }
         });
@@ -86,5 +100,43 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
 
             mLoginInfo.setText(email + " : " + token);
         }
+    }
+
+    private void userSignIn() {
+
+
+        FadeApi.authenticateByUsername("", "testGuy123", "12345", new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(final String s) {
+
+                        System.out.println("onResponse(): " + s);
+
+                        try {
+                            final JSONObject response = new JSONObject(s);
+                            if (response.getBoolean(FadeApi.API_RESULT_SUCCESS_KEY)) {
+                                final User user = User.from(response.getJSONObject(FadeApi.API_RESULT_DATA_KEY));
+
+                                FadeApplication.setMe(user);
+
+                                Intent i = new Intent(SignInActivity.this, FadeNavActivity.class);
+                                startActivity(i);
+                                finish();
+
+                            } else {
+                                //probably wrong password or invalid user
+                                System.out.println(response.getString(FadeApi.API_RESULT_DESCR_KEY));
+                            }
+
+                        } catch (final Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(final VolleyError volleyError) {
+                        System.out.println("volleyError: " + volleyError);
+                    }
+                });
     }
 }

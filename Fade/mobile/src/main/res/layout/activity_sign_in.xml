@@ -11,27 +11,60 @@
     <TextView
         android:id="@+id/welcome_txt"
         android:text="@string/welcome_sign_in"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:textSize="18dp"
+        android:layout_alignParentTop="true"
+        android:gravity="center"
+        android:paddingBottom="20dp"
+        android:textSize="25dp"
         android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/user_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/welcome_txt"
+        android:hint="Username" />
+
+    <EditText
+        android:id="@+id/password_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/user_name"
+        android:hint="password" />
 
     <Button
         android:id="@+id/sign_in_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/welcome_txt"
+        android:layout_below="@id/password_text"
         android:layout_marginTop="30dp"
         android:layout_centerHorizontal="true"
         android:text="Sign In" />
 
-    <com.google.android.gms.common.SignInButton
-        android:id="@+id/google_sign_in_button"
+    <TextView
+        android:id="@+id/sign_up_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
         android:layout_below="@+id/sign_in_button" />
+
+    <TextView
+        android:id="@+id/devider"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/sign_up_text"
+        android:text="--------------- or ---------------"
+        android:gravity="center"
+        android:layout_centerInParent="true"
+        android:paddingBottom="20dp"
+        android:textSize="30dp" />
+
+    <com.google.android.gms.common.SignInButton
+        android:id="@+id/google_sign_in_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/devider" />
 
     <TextView
         android:id="@+id/login_info"
