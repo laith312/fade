@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 21
-    buildToolsVersion '21.0.0'
+    buildToolsVersion '21.1.1'
 
     defaultConfig {
         applicationId "com.messenger.fade"
@@ -13,8 +13,11 @@ android {
     }
     buildTypes {
         release {
+
+            apply plugin: 'announce'
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            zipAlignEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }
 }
