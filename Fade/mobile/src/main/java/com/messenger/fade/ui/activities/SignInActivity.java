@@ -2,6 +2,7 @@ package com.messenger.fade.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -113,6 +114,9 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
 
                         try {
                             final JSONObject response = new JSONObject(s);
+
+                            Log.e("zzz", "response:" + response.toString());
+
                             if (response.getBoolean(FadeApi.API_RESULT_SUCCESS_KEY)) {
                                 final User user = User.from(response.getJSONObject(FadeApi.API_RESULT_DATA_KEY));
 
