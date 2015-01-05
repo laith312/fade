@@ -1,7 +1,6 @@
 package com.messenger.fade.photo;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -13,6 +12,7 @@ import android.util.DisplayMetrics;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import com.messenger.fade.ui.fragments.BaseFragment;
 import com.messenger.fade.util.ImageUtil;
 import com.messenger.fade.util.MLog;
 import com.messenger.fade.util.ThreadWrapper;
@@ -89,7 +89,7 @@ public abstract class PhotoChooser {
         intent.setAction(Intent.ACTION_GET_CONTENT);
         return intent;
     }
-    public void startPhotoChoosingActivityFromFragment(final Fragment fragment) {
+    public void startPhotoChoosingActivityFromFragment(final BaseFragment fragment) {
         final Intent intent = getPhotoChoosingIntent();
         fragment.startActivityForResult(Intent.createChooser(intent, "Select Picture"), ACTIVITY_REQUEST_SELECT_PHOTO);
     }
@@ -322,7 +322,7 @@ public abstract class PhotoChooser {
         activity.startActivityForResult(getPhotoShootingIntent(), ACTIVITY_REQUEST_SNAP_A_PHOTO);
     }
 
-    public void startPhotoShootingActivityFromFragment(final Fragment fragment) {
+    public void startPhotoShootingActivityFromFragment(final BaseFragment fragment) {
         fragment.startActivityForResult(getPhotoShootingIntent(), ACTIVITY_REQUEST_SNAP_A_PHOTO);
     }
 

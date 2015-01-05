@@ -1,6 +1,5 @@
 package com.messenger.fade.ui.fragments;
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -9,7 +8,7 @@ import android.view.ViewGroup;
 
 import com.messenger.fade.R;
 
-public class MessagesFragment extends Fragment {
+public class MessagesFragment extends BaseFragment {
 
     @Nullable
     @Override

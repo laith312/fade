@@ -1,15 +1,18 @@
 package com.messenger.fade.ui.activities;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.messenger.fade.MockContactsFragment;
+import com.messenger.fade.MockLoginFragment;
 import com.messenger.fade.R;
+import com.messenger.fade.application.FadeApplication;
+import com.messenger.fade.ui.fragments.BaseFragment;
 import com.messenger.fade.ui.fragments.ChatFragment;
 import com.messenger.fade.ui.fragments.ContactsFragment;
 import com.messenger.fade.ui.fragments.MessagesFragment;
@@ -37,20 +40,33 @@ public class FadeNavActivity extends BaseActivity
 
         setActionBarIcon(R.drawable.ic_ab_drawer);
 
-        mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager()
+        mNavigationDrawerFragment = (NavigationDrawerFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
 
         // Set up the drawer.
         mNavigationDrawerFragment
                 .setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout));
+
+        final FragmentManager fragmentManager = getSupportFragmentManager();
+        if (FadeApplication.me() == null) {
+            final BaseFragment fragment = new MockLoginFragment();
+            fragmentManager.beginTransaction()
+                    .replace(R.id.container, fragment).commit();
+
+        } else {
+            final BaseFragment fragment = new MockContactsFragment();
+            fragmentManager.beginTransaction()
+                    .replace(R.id.container, fragment).commit();
+        }
     }
 
     @Override
     public void onNavigationDrawerItemSelected(final int position) {
         // update the main content by replacing fragments
-        final FragmentManager fragmentManager = getFragmentManager();
-        final Fragment newFragment;
+
+        final FragmentManager fragmentManager = getSupportFragmentManager();
+        final BaseFragment newFragment;
 
         switch (position) {
             case 0:

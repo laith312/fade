@@ -3,7 +3,31 @@
     package="com.messenger.fade">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.GET_ACCOUNTS"></uses-permission>
+
+    <!--
+    The following permissions are for amazon and google cloud messaging
+    -->
+    <permission
+        android:name="com.messenger.fade.permission.RECEIVE_ADM_MESSAGE"
+        android:protectionLevel="signature" />
+
+    <uses-permission android:name="com.messenger.fade.permission.RECEIVE_ADM_MESSAGE" />
+
+    <permission android:name="com.messenger.fade.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
+    <uses-permission android:name="com.messenger.fade.permission.C2D_MESSAGE" />
+
+
+    <!-- This permission allows your app access to receive push notifications from ADM. -->
+    <uses-permission android:name="com.amazon.device.messaging.permission.RECEIVE" />
+
+    <!-- App receives GCM messages. -->
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    <!-- GCM requires a Google account. -->
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <!-- Keeps the processor from sleeping when a message is received. -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
 
     <application
         android:name=".application.FadeApplication"
@@ -19,19 +43,43 @@
         <activity
             android:name=".ui.activities.SignInActivity"
             android:label="@string/app_name">
+            <!--
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            -->
+        </activity>
+
+        <activity android:name=".ui.activities.FadeNavActivity">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.activities.FadeNavActivity" />
+
+        <activity android:name=".MockDisplayFadeActivity"/>
+
         <activity
             android:name=".ui.activities.SettingsActivity"
             android:label="@string/title_activity_settings" />
         <activity
             android:name=".ui.activities.GooglePlusLoginActivity"
             android:label="@string/title_activity_google_plus_login"></activity>
+
+        <service android:name=".GCMIntentService" />
+
+        <receiver
+            android:name=".GCMBroadcastReceiver"
+            android:permission="com.google.android.c2dm.permission.SEND">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <category android:name="com.messenger.fade" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

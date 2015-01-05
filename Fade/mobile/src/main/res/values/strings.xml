@@ -24,4 +24,9 @@
     <string name="title_activity_google_plus_login">GooglePlusLoginActivity</string>
     <string name="hello_world">Hello world!</string>
 
+
+    <string-array name="mock_conversation">
+        <item>Sending a FADE is easy!  Just type your message below and tap the Send button.</item>
+    </string-array>
+
 </resources>

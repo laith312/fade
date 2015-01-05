@@ -287,4 +287,86 @@ public final class FadeApi {
         FadeApplication.getRequestQueue().add(request);
 
     }
+
+    /**
+     * Registers a user and device to fade server per cloud messaging
+     *
+     * @param cancelTag
+     * @param id - user id
+     * @param regid - registration id provided by google or amazon
+     * @param deviceid - unique deviceid
+     * @param listener
+     * @param errorListener
+     */
+    public static void gcmReg(final Object cancelTag, final int id, final String regid, final String deviceid, final Response.Listener<String> listener, final Response.ErrorListener errorListener) {
+        final HashMap<String, String> params = new HashMap<String, String>();
+        params.put("id", id+"");
+        params.put("deviceid", deviceid);
+        params.put("regid", regid);
+        params.put("type", "reg");
+        final Request request = new FadePostRequest(API_BASE + "/gcm", params, listener, errorListener);
+        request.setShouldCache(false).setRetryPolicy(DEFAULT_RETRY_POLICY).setTag(cancelTag);
+        FadeApplication.getRequestQueue().add(request);
+    }
+
+    /**
+     * Unregisters user and device from fade server per cloud messaging
+     *
+     * @param cancelTag
+     * @param id
+     * @param regid
+     * @param deviceid
+     * @param listener
+     * @param errorListener
+     */
+    public static void gcmUnreg(final Object cancelTag, final int id, final String regid, final String deviceid, final Response.Listener<String> listener, final Response.ErrorListener errorListener) {
+        final HashMap<String, String> params = new HashMap<String, String>();
+        params.put("id", id+"");
+        params.put("deviceid", deviceid);
+        params.put("regid", regid);
+        params.put("type", "unreg");
+        final Request request = new FadePostRequest(API_BASE + "/gcm", params, listener, errorListener);
+        request.setShouldCache(false).setRetryPolicy(DEFAULT_RETRY_POLICY).setTag(cancelTag);
+        FadeApplication.getRequestQueue().add(request);
+    }
+
+    /**
+     * Sends a message to a fade user
+     *
+     * @param cancelTag
+     * @param toid
+     * @param msg
+     * @param listener
+     * @param errorListener
+     */
+    public static void gcmSend(final Object cancelTag, final int toid, final String msg, final Response.Listener<String> listener, final Response.ErrorListener errorListener) {
+        final HashMap<String, String> params = new HashMap<String, String>();
+        params.put("toid", toid+"");
+        params.put("msg", msg);
+        params.put("type", "send");
+        final Request request = new FadePostRequest(API_BASE + "/gcm", params, listener, errorListener);
+        request.setShouldCache(false).setRetryPolicy(DEFAULT_RETRY_POLICY).setTag(cancelTag);
+        FadeApplication.getRequestQueue().add(request);
+    }
+
+    /**
+     * Given a string list of white space separated user ids, returns a list of who
+     * is actually installed and able to receive messages
+     *
+     * @param cancelTag
+     * @param listOfUserIds
+     * @param listener
+     * @param errorListener
+     */
+    public static void gcmInstalled(final Object cancelTag, final String listOfUserIds, final Response.Listener<String> listener, final Response.ErrorListener errorListener) {
+        final HashMap<String, String> params = new HashMap<String, String>();
+        params.put("list", listOfUserIds);
+        final Request request = new FadePostRequest(API_BASE + "/ins", params, listener, errorListener);
+        request.setShouldCache(false).setRetryPolicy(DEFAULT_RETRY_POLICY).setTag(cancelTag);
+        FadeApplication.getRequestQueue().add(request);
+    }
+
+    public static void cancelAll(final Object tag) {
+        FadeApplication.getRequestQueue().cancelAll(tag);
+    }
 }

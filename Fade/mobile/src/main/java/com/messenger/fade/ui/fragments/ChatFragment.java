@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 
 import com.messenger.fade.R;
 
-public class ChatFragment extends Fragment {
+public class ChatFragment extends BaseFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
