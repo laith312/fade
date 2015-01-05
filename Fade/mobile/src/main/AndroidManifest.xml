@@ -31,7 +31,9 @@
             android:label="@string/title_activity_settings" />
         <activity
             android:name=".ui.activities.GooglePlusLoginActivity"
-            android:label="@string/title_activity_google_plus_login"></activity>
+            android:label="@string/title_activity_google_plus_login" />
+
+        <activity android:name=".ui.activities.RegistrationActivity" />
     </application>
 
 </manifest>

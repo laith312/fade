@@ -7,6 +7,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.android.volley.Response;
@@ -17,10 +18,13 @@ import com.messenger.fade.R;
 import com.messenger.fade.application.FadeApplication;
 import com.messenger.fade.model.User;
 import com.messenger.fade.rest.FadeApi;
+import com.messenger.fade.util.FadeUtil;
 
 import org.json.JSONObject;
 
 public class SignInActivity extends BaseActivity implements View.OnClickListener {
+    public static final String EMAIL = "email";
+    public static final String USERNAME = "username";
     private TextView mLoginInfo;
 
 
@@ -105,8 +109,13 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
 
     private void userSignIn() {
 
+        final EditText usernameView = (EditText) findViewById(R.id.user_name);
+        final EditText passwordView = (EditText) findViewById(R.id.password_text);
 
-        FadeApi.authenticateByUsername("", "testGuy123", "12345", new Response.Listener<String>() {
+        Log.e("zzz", "login:: username:" + usernameView.getText().toString() + " password:" + passwordView.getText().toString());
+
+        //FadeApi.authenticateByUsername(SignInActivity.class.getSimpleName(), "testGuy1234", "12345", new Response.Listener<String>() {
+        FadeApi.authenticateByUsername(SignInActivity.class.getSimpleName(), usernameView.getText().toString(), passwordView.getText().toString(), new Response.Listener<String>() {
                     @Override
                     public void onResponse(final String s) {
 
@@ -129,6 +138,10 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
                             } else {
                                 //probably wrong password or invalid user
                                 System.out.println(response.getString(FadeApi.API_RESULT_DESCR_KEY));
+
+                                if ("invalid sign-in credentials".equals(response.getString(FadeApi.API_RESULT_DESCR_KEY))) {
+                                    FadeUtil.FadeToast("incorrect username or password");
+                                }
                             }
 
                         } catch (final Exception e) {
