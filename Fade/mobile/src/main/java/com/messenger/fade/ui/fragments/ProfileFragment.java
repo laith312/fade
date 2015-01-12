@@ -1,6 +1,5 @@
 package com.messenger.fade.ui.fragments;
 
-import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -21,11 +20,11 @@ import com.messenger.fade.util.MLog;
 
 import java.io.File;
 
-public class ProfileFragment extends Fragment {
+public class ProfileFragment extends BaseFragment {
 
     private static final String TAG = ProfileFragment.class.getSimpleName();
 
-    private Fragment _this = this;
+    private BaseFragment _this = this;
     private PhotoChooser photoChooser;
 
     @Override

@@ -8,6 +8,8 @@ import android.preference.PreferenceManager;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.messenger.fade.R;
 import com.messenger.fade.model.User;
 import com.messenger.fade.util.BitmapLruCache;
@@ -32,6 +34,15 @@ public final class FadeApplication extends Application {
 
     private static SharedPreferences sharedPreferences;
 
+    /**
+     * In most normal cases, the device either supports amazon cloud messaging
+     * or google cloud messaging.
+     *
+     * This is determined at runtime.
+     */
+    public static boolean sIsGcmSupported;
+    public static boolean sIsAdmSupported;
+
     private static User me;
 
 
@@ -41,6 +52,7 @@ public final class FadeApplication extends Application {
         super.onCreate();
 
         ThreadWrapper.init();
+        initCloudMessaging();
 
         MLog.setEnabled(getPackageName(), getResources().getBoolean(R.bool.is_logging_enabled));
 
@@ -108,6 +120,27 @@ public final class FadeApplication extends Application {
             return me;
         }
         return getMeFromPreferences();
+    }
+
+    /**
+     * basic initialization; there will be further
+     * init in the activity
+     */
+    private void initCloudMessaging() {
+
+        try {
+            Class.forName("com.amazon.device.messaging.ADM");
+            sIsAdmSupported = true;
+        } catch (final ClassNotFoundException e) {
+            sIsAdmSupported = false;
+        }
+
+        try {
+            sIsGcmSupported = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this)
+                    == ConnectionResult.SUCCESS;
+        } catch (final Throwable t) {
+            MLog.e(TAG, "Device does not support GCM", t);
+        }
     }
 
     public static SharedPreferences getSharedPreferences() {
