@@ -39,6 +39,7 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
         final User me = FadeApplication.me();
         if (me != null && me.getId() != 0) {
             startActivity(new Intent(this, FadeNavActivity.class));
+            finish();
         }
 
         final Button signInButton = (Button) findViewById(R.id.sign_in_button);
@@ -46,11 +47,11 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
 
         // Mock signin
 
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         list.add("testGuy123");
         list.add("testUser888");
 
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_item, list);
 
         final Spinner spinner = (Spinner) findViewById(R.id.spinner);
@@ -104,10 +105,7 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+        return id == R.id.action_settings || super.onOptionsItemSelected(item);
     }
 
     @Override
