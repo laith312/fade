@@ -6,7 +6,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.android.volley.Response;
@@ -17,10 +19,16 @@ import com.messenger.fade.R;
 import com.messenger.fade.application.FadeApplication;
 import com.messenger.fade.model.User;
 import com.messenger.fade.rest.FadeApi;
+import com.messenger.fade.util.FadeUtil;
 
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SignInActivity extends BaseActivity implements View.OnClickListener {
+    public static final String EMAIL = "email";
+    public static final String USERNAME = "username";
     private TextView mLoginInfo;
 
 
@@ -28,7 +36,29 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        final User me = FadeApplication.me();
+        if (me != null && me.getId() != 0) {
+            startActivity(new Intent(this, FadeNavActivity.class));
+            finish();
+        }
+
         final Button signInButton = (Button) findViewById(R.id.sign_in_button);
+
+
+        // Mock signin
+
+        List<String> list = new ArrayList<>();
+        list.add("testGuy123");
+        list.add("testUser888");
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, list);
+
+        final Spinner spinner = (Spinner) findViewById(R.id.spinner);
+        spinner.setAdapter(dataAdapter);
+
+
+        // Real Signin
         final TextView signUpTextView = (TextView) findViewById(R.id.sign_up_text);
         final SignInButton googleButton = (SignInButton) findViewById(R.id.google_sign_in_button);
         mLoginInfo = (TextView) findViewById(R.id.login_info);
@@ -54,7 +84,11 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
 
     @Override
     protected int getLayoutResource() {
-        return R.layout.activity_sign_in;
+        // Mock
+        return R.layout.mock_activity_sign_in;
+
+        // Real
+        //return R.layout.activity_sign_in;
     }
 
 
@@ -71,10 +105,7 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+        return id == R.id.action_settings || super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -104,9 +135,30 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
     }
 
     private void userSignIn() {
+        String username;
+        String password;
+
+        // REAL
+//        final EditText usernameView = (EditText) findViewById(R.id.user_name);
+//        final EditText passwordView = (EditText) findViewById(R.id.password_text);
+//        Log.e("zzz", "login:: username:" + usernameView.getText().toString() + " password:" + passwordView.getText().toString());
 
 
-        FadeApi.authenticateByUsername("", "testGuy123", "12345", new Response.Listener<String>() {
+        // Mock
+        Spinner spinner = (Spinner) findViewById(R.id.spinner);
+
+
+        if (spinner.getSelectedItemPosition() == 0) {
+            username = "testGuy123";
+            password = "12345";
+        } else {
+            username = "testUser888";
+            password = "12345";
+        }
+
+        Log.e("zzz", "login:: username:" + username + " password:" + password);
+
+        FadeApi.authenticateByUsername(SignInActivity.class.getSimpleName(), username, password, new Response.Listener<String>() {
                     @Override
                     public void onResponse(final String s) {
 
@@ -129,6 +181,10 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
                             } else {
                                 //probably wrong password or invalid user
                                 System.out.println(response.getString(FadeApi.API_RESULT_DESCR_KEY));
+
+                                if ("invalid sign-in credentials".equals(response.getString(FadeApi.API_RESULT_DESCR_KEY))) {
+                                    FadeUtil.FadeToast("incorrect username or password");
+                                }
                             }
 
                         } catch (final Exception e) {

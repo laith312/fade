@@ -26,6 +26,7 @@ public final class FadeApi {
     public static final String API_RESULT_SUCCESS_KEY = "success";
     public static final String API_RESULT_DATA_KEY = "data";
     public static final String API_RESULT_DESCR_KEY = "descr";
+    public static final String API_RESULT_EXISTS_KEY = "exists";
 
     private static final String API_BASE = "https://api.fadechat.com/v1";
 
