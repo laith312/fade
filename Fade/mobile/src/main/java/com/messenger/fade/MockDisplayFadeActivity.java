@@ -36,7 +36,7 @@ public final class MockDisplayFadeActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        final String text = getIntent().getStringExtra(Constants.PROPERTY_TEXT);
+        final String text = getIntent().getStringExtra(MessageConstants.PROPERTY_TEXT);
         mFade.setText(text);
         mFade.show();
         startTimer();

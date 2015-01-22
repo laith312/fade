@@ -38,8 +38,8 @@ public final class MockChatFragment extends BaseFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mToId = getArguments().getInt(Constants.PROPERTY_USERID);
-        mToUsername = getArguments().getString(Constants.PROPERTY_USERNAME);
+        mToId = getArguments().getInt(MessageConstants.PROPERTY_USERID);
+        mToUsername = getArguments().getString(MessageConstants.PROPERTY_USERNAME);
         final AQuery a = new AQuery(getView());
         a.id(R.id.send).clicked(this, "send");
         mMessage = (EditText) getView().findViewById(R.id.message);
@@ -55,9 +55,9 @@ public final class MockChatFragment extends BaseFragment {
 
         final JSONObject msg = new JSONObject();
         try {
-            msg.put(Constants.PROPERTY_TEXT, m);
-            msg.put(Constants.PROPERTY_USERNAME, FadeApplication.me().getUsername());
-            msg.put(Constants.PROPERTY_USERID, FadeApplication.me().getId());
+            msg.put(MessageConstants.PROPERTY_TEXT, m);
+            msg.put(MessageConstants.PROPERTY_USERNAME, FadeApplication.me().getUsername());
+            msg.put(MessageConstants.PROPERTY_USERID, FadeApplication.me().getId());
             FadeApi.gcmSend(this, mToId, msg.toString(), new Response.Listener<String>() {
                 @Override
                 public void onResponse(String s) {

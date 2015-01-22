@@ -29,12 +29,12 @@ public final class GCMIntentService extends IntentService {
 
     private void onMessage(final Context context, final Intent data) throws Exception {
 
-        final JSONObject message = new JSONObject(data.getStringExtra(Constants.PROPERTY_PAYLOAD));
+        final JSONObject message = new JSONObject(data.getStringExtra(MessageConstants.PROPERTY_PAYLOAD));
         MLog.i(TAG, "onMessage: ", message.toString());
 
-        final int userid = message.getInt(Constants.PROPERTY_USERID);
-        final String username = message.getString(Constants.PROPERTY_USERNAME);
-        final String text = message.getString(Constants.PROPERTY_TEXT);
+        final int userid = message.getInt(MessageConstants.PROPERTY_USERID);
+        final String username = message.getString(MessageConstants.PROPERTY_USERNAME);
+        final String text = message.getString(MessageConstants.PROPERTY_TEXT);
         final Notification notification = new Notification(
                 R.drawable.ic_launcher, "Fade via: " + username,
                 System.currentTimeMillis());
@@ -42,10 +42,10 @@ public final class GCMIntentService extends IntentService {
         final int notificationId = new Random().nextInt(1000000);
         final Intent intent = new Intent(context, MockDisplayFadeActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.putExtra(Constants.PROPERTY_NOTIFICATION_ID, notificationId);
-        intent.putExtra(Constants.PROPERTY_USERID, userid);
-        intent.putExtra(Constants.PROPERTY_USERNAME, username);
-        intent.putExtra(Constants.PROPERTY_TEXT, text);
+        intent.putExtra(MessageConstants.PROPERTY_NOTIFICATION_ID, notificationId);
+        intent.putExtra(MessageConstants.PROPERTY_USERID, userid);
+        intent.putExtra(MessageConstants.PROPERTY_USERNAME, username);
+        intent.putExtra(MessageConstants.PROPERTY_TEXT, text);
 
         final PendingIntent pendingIntent = PendingIntent.getActivity(
                 context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);

@@ -61,7 +61,7 @@ public final class GCMRegistrationManager {
             if (mGcm == null) {
                 mGcm = GoogleCloudMessaging.getInstance(mContext);
             }
-            mRegId = mGcm.register(Constants.GCM_SENDER_ID);
+            mRegId = mGcm.register(MessageConstants.GCM_SENDER_ID);
 
             // You should send the registration ID to your server over
             // HTTP,

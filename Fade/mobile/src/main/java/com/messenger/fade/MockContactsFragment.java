@@ -86,8 +86,8 @@ public final class MockContactsFragment extends BaseFragment {
         final FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         final BaseFragment fragment = new MockChatFragment();
         final Bundle args = new Bundle();
-        args.putInt(Constants.PROPERTY_USERID, mToId);
-        args.putString(Constants.PROPERTY_USERNAME, mToUsername);
+        args.putInt(MessageConstants.PROPERTY_USERID, mToId);
+        args.putString(MessageConstants.PROPERTY_USERNAME, mToUsername);
         fragment.setArguments(args);
 
         fragmentManager.beginTransaction().replace(R.id.container,fragment).addToBackStack(null).commit();

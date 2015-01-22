@@ -119,7 +119,7 @@ public final class LocalMessageManager {
 				if (idVal != null) {
 					mh.sqlliteid = idVal.intValue();
 				}
-				mh.touserid = contentValues.getAsString(DbColumns.CONTAINER_ID);
+				mh.touserid = contentValues.getAsInteger(DbColumns.CONTAINER_ID);
 				mh.date = new Date(contentValues.getAsLong(DbColumns.DATELONG));
 				mh.deviceid = contentValues.getAsString(DbColumns.DEVICEID);
 				mh.filekey = contentValues.getAsString(DbColumns.FILEKEY);
@@ -163,7 +163,7 @@ public final class LocalMessageManager {
 				} else {
 					return null;
 				}
-				mh.touserid = contentValues.getAsString(DbColumns.CONTAINER_ID);
+				mh.touserid = contentValues.getAsInteger(DbColumns.CONTAINER_ID);
 				mh.date = new Date(contentValues.getAsLong(DbColumns.DATELONG));
 				mh.deviceid = contentValues.getAsString(DbColumns.DEVICEID);
 				mh.filekey = contentValues.getAsString(DbColumns.FILEKEY);
@@ -227,7 +227,7 @@ public final class LocalMessageManager {
 				if (idVal != null) {
 					mh.sqlliteid = idVal.intValue();
 				}
-				mh.touserid = contentValues.getAsString(DbColumns.CONTAINER_ID);
+				mh.touserid = contentValues.getAsInteger(DbColumns.CONTAINER_ID);
 				mh.date = new Date(contentValues.getAsLong(DbColumns.DATELONG));
 				
 				try {
@@ -340,7 +340,7 @@ public final class LocalMessageManager {
 				if (idVal != null) {
 					mh.sqlliteid = idVal.intValue();
 				}
-				mh.touserid = contentValues.getAsString(DbColumns.CONTAINER_ID);
+				mh.touserid = contentValues.getAsInteger(DbColumns.CONTAINER_ID);
 			
 				//old column
 				final String dateString = contentValues.getAsString(DbColumns.DATE);
