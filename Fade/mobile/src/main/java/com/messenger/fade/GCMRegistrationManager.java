@@ -24,7 +24,7 @@ public final class GCMRegistrationManager {
     private static final String TAG = GCMRegistrationManager.class.getSimpleName();
 
     private static final String PROPERTY_APP_VERSION = "appVersion";
-    public static final String PROPERTY_REG_ID = "registration_id";
+    private static final String PROPERTY_REG_ID = "registration_id";
     private GoogleCloudMessaging mGcm;
     private String mRegId;
     private Context mContext;
@@ -49,8 +49,22 @@ public final class GCMRegistrationManager {
         }
     }
 
+    public void unregisterGCM() {
+        mGcm = GoogleCloudMessaging.getInstance(mContext);
+        mRegId = getRegistrationId(mContext);
+
+        if (!mRegId.isEmpty()) {
+            new Thread() {
+                @Override
+                public void run() {
+                    unregister();
+                }
+            }.start();
+        }
+    }
+
     /**
-     * Registers the application with GCM servers asynchronously.
+     * Registers the application with GCM and the registration id with our own server
      * <p/>
      * Stores the registration ID and app versionCode in the application's
      * shared preferences.
@@ -98,6 +112,41 @@ public final class GCMRegistrationManager {
     }
 
     /**
+     * Registers the application with GCM and the registration id with our own server
+     * <p/>
+     * Stores the registration ID and app versionCode in the application's
+     * shared preferences.
+     */
+    private void unregister() {
+
+        try {
+            if (mGcm == null) {
+                mGcm = GoogleCloudMessaging.getInstance(mContext);
+            }
+            mGcm.unregister();
+
+            FadeApi.gcmUnreg(null, FadeApplication.me().getId(), mRegId, DeviceUtil.getAndroidId(mContext), new Response.Listener<String>() {
+                @Override
+                public void onResponse(final String s) {
+                    MLog.i(TAG, "FadeApi.gcmUnreg() response: " + s);
+                    removeRegistrationId(mContext);
+                    FadeApplication.removeMe();
+                    MLog.i(TAG,"successfully unregistered from gcm");
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError volleyError) {
+                    MLog.e(TAG, "FadeApi.gcmUnreg() error response: " + volleyError.getMessage());
+                }
+            });
+
+        } catch (final Exception e) {
+            MLog.e(TAG, "", e);
+        }
+
+    }
+
+    /**
      * Gets the current registration ID for application on GCM service.
      * <p/>
      * If result is empty, the app needs to registerIfNecessary.
@@ -105,7 +154,7 @@ public final class GCMRegistrationManager {
      * @return registration ID, or empty string if there is no existing
      * registration ID.
      */
-    public static String getRegistrationId(final Context context) {
+    private static String getRegistrationId(final Context context) {
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         final String registrationId = prefs.getString(PROPERTY_REG_ID, "");
         if (registrationId.isEmpty()) {
@@ -124,7 +173,7 @@ public final class GCMRegistrationManager {
         return registrationId;
     }
 
-    public static void removeRegistrationId(final Context context) {
+    private static void removeRegistrationId(final Context context) {
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         final int appVersion = getAppVersion(context);
         MLog.i(TAG, "Removing regId on app version " + appVersion);

@@ -8,6 +8,7 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.messenger.fade.GCMRegistrationManager;
 import com.messenger.fade.MockContactsFragment;
 import com.messenger.fade.MockLoginFragment;
 import com.messenger.fade.R;
@@ -126,6 +127,10 @@ public class FadeNavActivity extends BaseActivity
             return true;
         } else if (id == android.R.id.home) {
             mNavigationDrawerFragment.openDrawer(Gravity.START);
+            return true;
+        } else if (id == R.id.action_logout) {
+            new GCMRegistrationManager(this).unregisterGCM();
+            finish();
             return true;
         }
         return super.onOptionsItemSelected(item);

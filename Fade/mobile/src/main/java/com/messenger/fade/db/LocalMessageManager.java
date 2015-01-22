@@ -433,11 +433,11 @@ public final class LocalMessageManager {
 				db.execSQL("CREATE TABLE " + MESSAGE_TABLE_NAME + " ("
 						+ DbColumns.ID
 						+ " INTEGER PRIMARY KEY AUTOINCREMENT,"
-						+ DbColumns.CONTAINER_ID + " TEXT, "
+						+ DbColumns.CONTAINER_ID + " INTEGER, "
 						+ DbColumns.TEXT + " TEXT, "
 						+ DbColumns.USERNAME + " TEXT, " 
 						+ DbColumns.DEVICEID + " TEXT, " 
-						+ DbColumns.DATE + " TEXT, "
+						+ DbColumns.DATE + " INTEGER, "
 						+ DbColumns.FILEKEY + " TEXT, "
 						+ DbColumns.UNIQUE_ID + " TEXT );");
 				
