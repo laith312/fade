@@ -60,7 +60,7 @@
             <!--</intent-filter>-->
         </activity>
 
-        <activity android:name=".MockDisplayFadeActivity"/>
+        <activity android:name=".ui.activities.DisplayFadeActivity"/>
 
         <activity
             android:name=".ui.activities.SettingsActivity"

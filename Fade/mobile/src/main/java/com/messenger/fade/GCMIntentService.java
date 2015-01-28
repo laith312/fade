@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.messenger.fade.ui.activities.DisplayFadeActivity;
 import com.messenger.fade.util.MLog;
 
 import org.json.JSONObject;
@@ -40,7 +41,7 @@ public final class GCMIntentService extends IntentService {
                 System.currentTimeMillis());
 
         final int notificationId = new Random().nextInt(1000000);
-        final Intent intent = new Intent(context, MockDisplayFadeActivity.class);
+        final Intent intent = new Intent(context, DisplayFadeActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(MessageConstants.PROPERTY_NOTIFICATION_ID, notificationId);
         intent.putExtra(MessageConstants.PROPERTY_USERID, userid);

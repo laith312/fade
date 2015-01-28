@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.messenger.fade.application.FadeApplication;
 import com.messenger.fade.ui.fragments.BaseFragment;
+import com.messenger.fade.ui.fragments.ChatFragment;
 
 /**
  * Created by kkawai on 1/5/15.
@@ -84,7 +85,7 @@ public final class MockContactsFragment extends BaseFragment {
 
     private void goToMockChat() {
         final FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-        final BaseFragment fragment = new MockChatFragment();
+        final BaseFragment fragment = new ChatFragment();
         final Bundle args = new Bundle();
         args.putInt(MessageConstants.PROPERTY_USERID, mToId);
         args.putString(MessageConstants.PROPERTY_USERNAME, mToUsername);

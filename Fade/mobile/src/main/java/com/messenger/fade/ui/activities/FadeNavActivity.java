@@ -14,7 +14,7 @@ import com.messenger.fade.MockLoginFragment;
 import com.messenger.fade.R;
 import com.messenger.fade.application.FadeApplication;
 import com.messenger.fade.ui.fragments.BaseFragment;
-import com.messenger.fade.ui.fragments.ChatFragment;
+import com.messenger.fade.ui.fragments.ChatsFragment;
 import com.messenger.fade.ui.fragments.ContactsFragment;
 import com.messenger.fade.ui.fragments.MessagesFragment;
 import com.messenger.fade.ui.fragments.NavigationDrawerFragment;
@@ -80,7 +80,7 @@ public class FadeNavActivity extends BaseActivity
                 newFragment = new ContactsFragment();
                 break;
             case 3:
-                newFragment = new ChatFragment();
+                newFragment = new ChatsFragment();
                 break;
 
             default:

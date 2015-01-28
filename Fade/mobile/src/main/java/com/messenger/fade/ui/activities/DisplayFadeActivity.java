@@ -1,8 +1,10 @@
-package com.messenger.fade;
+package com.messenger.fade.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.messenger.fade.MessageConstants;
+import com.messenger.fade.R;
 import com.messenger.fade.ui.SecretTextView;
 import com.messenger.fade.ui.activities.BaseActivity;
 import com.messenger.fade.util.ThreadWrapper;
@@ -10,7 +12,7 @@ import com.messenger.fade.util.ThreadWrapper;
 /**
  * Created by kkawai on 1/5/15.
  */
-public final class MockDisplayFadeActivity extends BaseActivity {
+public final class DisplayFadeActivity extends BaseActivity {
 
     private SecretTextView mFade;
     private boolean mIsDestroyed;
