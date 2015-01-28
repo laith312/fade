@@ -89,13 +89,15 @@ public class RegistrationActivity extends BaseActivity {
 
                 Log.e("zzz", "email:" + mValidEmail + " username:" + mValidUsername + " password:" + mValidPassword);
 
-                validateEmail(emailView.getText().toString());
-                validateUsername(usernameView.getText().toString());
+                //validateEmail(emailView.getText().toString());
+                //validateUsername(usernameView.getText().toString());
                 validatePassword();
 
                 if (mValidEmail && mValidPassword && mValidUsername) {
                     Log.e("zzz", "createUser");
                     createUser(emailView.getText().toString(), usernameView.getText().toString(), passwordView.getText().toString());
+                    startActivity(new Intent(RegistrationActivity.this, FadeNavActivity.class));
+                    finish();
                 } else if (mCheckingEmail || mCheckingUsername) {
                     // TODO add delay and check again, waiting for email || username verification
                 }
@@ -194,7 +196,7 @@ public class RegistrationActivity extends BaseActivity {
     }
 
     private void validatePassword() {
-        EditText passwordView = (EditText) findViewById(R.id.password_text);
+        EditText passwordView = (EditText) findViewById(R.id.registration_password);
 
         final String password = passwordView.getText().toString();
 

@@ -6,9 +6,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.Spinner;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.android.volley.Response;
@@ -22,9 +21,6 @@ import com.messenger.fade.rest.FadeApi;
 import com.messenger.fade.util.FadeUtil;
 
 import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class SignInActivity extends BaseActivity implements View.OnClickListener {
     public static final String EMAIL = "email";
@@ -47,15 +43,15 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
 
         // Mock signin
 
-        List<String> list = new ArrayList<>();
-        list.add("testGuy123");
-        list.add("testUser888");
-
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item, list);
-
-        final Spinner spinner = (Spinner) findViewById(R.id.spinner);
-        spinner.setAdapter(dataAdapter);
+//        List<String> list = new ArrayList<>();
+//        list.add("testGuy123");
+//        list.add("testUser888");
+//
+//        ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(this,
+//                android.R.layout.simple_spinner_item, list);
+//
+//        final Spinner spinner = (Spinner) findViewById(R.id.spinner);
+//        spinner.setAdapter(dataAdapter);
 
 
         // Real Signin
@@ -85,10 +81,10 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
     @Override
     protected int getLayoutResource() {
         // Mock
-        return R.layout.mock_activity_sign_in;
+//        return R.layout.mock_activity_sign_in;
 
         // Real
-        //return R.layout.activity_sign_in;
+        return R.layout.activity_sign_in;
     }
 
 
@@ -139,22 +135,23 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
         String password;
 
         // REAL
-//        final EditText usernameView = (EditText) findViewById(R.id.user_name);
-//        final EditText passwordView = (EditText) findViewById(R.id.password_text);
-//        Log.e("zzz", "login:: username:" + usernameView.getText().toString() + " password:" + passwordView.getText().toString());
+        final EditText usernameView = (EditText) findViewById(R.id.user_name);
+        final EditText passwordView = (EditText) findViewById(R.id.password_text);
 
+        username = usernameView.getText().toString();
+        password = passwordView.getText().toString();
 
         // Mock
-        Spinner spinner = (Spinner) findViewById(R.id.spinner);
-
-
-        if (spinner.getSelectedItemPosition() == 0) {
-            username = "testGuy123";
-            password = "12345";
-        } else {
-            username = "testUser888";
-            password = "12345";
-        }
+//        Spinner spinner = (Spinner) findViewById(R.id.spinner);
+//
+//
+//        if (spinner.getSelectedItemPosition() == 0) {
+//            username = "testGuy123";
+//            password = "12345";
+//        } else {
+//            username = "testUser888";
+//            password = "12345";
+//        }
 
         Log.e("zzz", "login:: username:" + username + " password:" + password);
 
