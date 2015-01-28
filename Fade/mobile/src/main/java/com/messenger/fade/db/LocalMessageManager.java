@@ -14,7 +14,6 @@ import com.messenger.fade.application.FadeApplication;
 import com.messenger.fade.model.Message;
 import com.messenger.fade.util.MLog;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -32,7 +31,7 @@ public final class LocalMessageManager {
 	private static LocalMessageManager instance;
 	private static final String MESSAGES_DATABASE_NAME = "messages.db";
 	private static final String MESSAGE_TABLE_NAME = "message";
-	private static final int CURRENT_VERSION = 6;
+	private static final int CURRENT_VERSION = 1;
 
 	private DbOpenHelper sqlHelper;
 
@@ -56,12 +55,12 @@ public final class LocalMessageManager {
 		}
 	}
 
-	public synchronized void insertOrUpdate(final Message mh) {
+	public synchronized void insertOrUpdate(final Message message) {
 		try {
 			final SQLiteDatabase db = sqlHelper.getWritableDatabase();
 			final long rowId = db.replace(MESSAGE_TABLE_NAME, null,
-					getContentValues(mh));
-			MLog.i(TAG, "MessageManager.insertOrUpdate() ", mh.text, " insert/update at ", rowId);
+					getContentValues(message));
+			MLog.i(TAG, "MessageManager.insertOrUpdate() ", message.text, " insert/update at ", rowId);
 		} catch (Throwable t) {
 			MLog.e(TAG, "MessageManager.insertOrUpdate() Error in storing message holder: ", t);
 		}
@@ -101,7 +100,7 @@ public final class LocalMessageManager {
 	
 	public synchronized Message updateMessageRead(final String uniqueid, final Date read) {
 		
-		Message mh = null;
+		Message message = null;
 		Cursor cursor = null;
 		try {
 			final SQLiteDatabase db = sqlHelper.getReadableDatabase();
@@ -114,22 +113,22 @@ public final class LocalMessageManager {
 			cursor.moveToFirst();
 			while (!cursor.isAfterLast()) {
 				DatabaseUtils.cursorRowToContentValues(cursor, contentValues);
-				mh = new Message();
+                message = new Message();
 				final Integer idVal = contentValues.getAsInteger(DbColumns.ID);
 				if (idVal != null) {
-					mh.sqlliteid = idVal.intValue();
+                    message.sqlliteid = idVal.intValue();
 				}
-				mh.touserid = contentValues.getAsInteger(DbColumns.CONTAINER_ID);
-				mh.date = new Date(contentValues.getAsLong(DbColumns.DATELONG));
-				mh.deviceid = contentValues.getAsString(DbColumns.DEVICEID);
-				mh.filekey = contentValues.getAsString(DbColumns.FILEKEY);
-				mh.text = contentValues.getAsString(DbColumns.TEXT);
-				mh.uniqueid = contentValues.getAsString(DbColumns.UNIQUE_ID);
-				mh.username = contentValues.getAsString(DbColumns.USERNAME);
-				mh.read = read;
-				MLog.i(TAG, "MessageManager updateMessageRead() mh.uniqueid="+mh.uniqueid);
+                message.containerid = contentValues.getAsString(DbColumns.CONTAINER_ID);
+                message.createdate = new Date(contentValues.getAsLong(DbColumns.CREATE_DATE));
+                message.partneruserid = contentValues.getAsInteger(DbColumns.PARTNER_ID);
+                message.partnerusername = contentValues.getAsString(DbColumns.PARTNER_USERNAME);
+                message.filekey = contentValues.getAsString(DbColumns.FILEKEY);
+                message.text = contentValues.getAsString(DbColumns.TEXT);
+                message.uniqueid = contentValues.getAsString(DbColumns.UNIQUE_ID);
+                message.read = read;
+				MLog.i(TAG, "MessageManager updateMessageRead() uniqueid="+message.uniqueid);
 				
-				insertOrUpdate(mh);
+				insertOrUpdate(message);
 				break;
 			}
 		} catch (Exception e) {
@@ -139,11 +138,11 @@ public final class LocalMessageManager {
 				cursor.close();
 			}
 		}
-		return mh;
+		return message;
 	}
 	
 	public synchronized Message getMessage(final String uniqueid) {
-		Message mh = null;
+		Message message = null;
 		Cursor cursor = null;
 		try {
 			final SQLiteDatabase db = sqlHelper.getReadableDatabase();
@@ -156,26 +155,26 @@ public final class LocalMessageManager {
 			cursor.moveToFirst();
 			while (!cursor.isAfterLast()) {
 				DatabaseUtils.cursorRowToContentValues(cursor, contentValues);
-				mh = new Message();
+				message = new Message();
 				final Integer idVal = contentValues.getAsInteger(DbColumns.ID);
 				if (idVal != null) {
-					mh.sqlliteid = idVal.intValue();
+					message.sqlliteid = idVal.intValue();
 				} else {
 					return null;
 				}
-				mh.touserid = contentValues.getAsInteger(DbColumns.CONTAINER_ID);
-				mh.date = new Date(contentValues.getAsLong(DbColumns.DATELONG));
-				mh.deviceid = contentValues.getAsString(DbColumns.DEVICEID);
-				mh.filekey = contentValues.getAsString(DbColumns.FILEKEY);
-				mh.text = contentValues.getAsString(DbColumns.TEXT);
-				mh.uniqueid = contentValues.getAsString(DbColumns.UNIQUE_ID);
-				mh.username = contentValues.getAsString(DbColumns.USERNAME);
+				message.containerid = contentValues.getAsString(DbColumns.CONTAINER_ID);
+				message.createdate = new Date(contentValues.getAsLong(DbColumns.CREATE_DATE));
+				message.partneruserid = contentValues.getAsInteger(DbColumns.PARTNER_ID);
+                message.partnerusername = contentValues.getAsString(DbColumns.PARTNER_USERNAME);
+				message.filekey = contentValues.getAsString(DbColumns.FILEKEY);
+				message.text = contentValues.getAsString(DbColumns.TEXT);
+				message.uniqueid = contentValues.getAsString(DbColumns.UNIQUE_ID);
 				try {
-					mh.read = new Date(contentValues.getAsLong(DbColumns.READ));
+					message.read = new Date(contentValues.getAsLong(DbColumns.READ));
 				}catch(final Exception e) {
-					//TODO: logging
+					MLog.e(TAG,"could not get message read date");
 				}
-				MLog.i(TAG, "MessageManager getMessage() mh.uniqueid="+mh.uniqueid);
+				MLog.i(TAG, "MessageManager getMessage() uniqueid="+message.uniqueid);
 				break;
 			}
 			
@@ -186,7 +185,7 @@ public final class LocalMessageManager {
 				cursor.close();
 			}
 		}
-		return mh;
+		return message;
 	}
 	
 	public synchronized List<Message> getMessagesByContainer(final String containerid, final int floorid) {
@@ -209,7 +208,7 @@ public final class LocalMessageManager {
 					qb.appendWhere(String.format("%s ='%s' ", DbColumns.CONTAINER_ID, containerid));
 				}
 			} else {
-				MLog.i(TAG, "touserid: "+containerid);
+				MLog.i(TAG, "containerid: "+containerid);
 				if (floorid != 0) {
 					qb.appendWhere(String.format("( %s ='%s' OR %s ='%s') and %s < %d", DbColumns.CONTAINER_ID, split[1], DbColumns.CONTAINER_ID, containerid, DbColumns.ID, floorid));
 				} else {
@@ -222,30 +221,30 @@ public final class LocalMessageManager {
 			cursor.moveToFirst();
 			while (!cursor.isAfterLast()) {
 				DatabaseUtils.cursorRowToContentValues(cursor, contentValues);
-				final Message mh = new Message();
+				final Message message = new Message();
 				final Integer idVal = contentValues.getAsInteger(DbColumns.ID);
 				if (idVal != null) {
-					mh.sqlliteid = idVal.intValue();
+					message.sqlliteid = idVal.intValue();
 				}
-				mh.touserid = contentValues.getAsInteger(DbColumns.CONTAINER_ID);
-				mh.date = new Date(contentValues.getAsLong(DbColumns.DATELONG));
+				message.containerid = contentValues.getAsString(DbColumns.CONTAINER_ID);
+				message.createdate = new Date(contentValues.getAsLong(DbColumns.CREATE_DATE));
 				
 				try {
 					final Long read = contentValues.getAsLong(DbColumns.READ);
 					if (read != null) {
-						mh.read = new Date(read);
+						message.read = new Date(read);
 					}
 				}catch(final Exception e){
-					//TODO: logging
+                    MLog.e(TAG,"getMessagesByContainer() could not get message read date");
 				}
 				
-				mh.deviceid = contentValues.getAsString(DbColumns.DEVICEID);
-				mh.filekey = contentValues.getAsString(DbColumns.FILEKEY);
-				mh.text = contentValues.getAsString(DbColumns.TEXT);
-				mh.uniqueid = contentValues.getAsString(DbColumns.UNIQUE_ID);
-				mh.username = contentValues.getAsString(DbColumns.USERNAME);
+				message.partneruserid = contentValues.getAsInteger(DbColumns.PARTNER_ID);
+				message.filekey = contentValues.getAsString(DbColumns.FILEKEY);
+				message.text = contentValues.getAsString(DbColumns.TEXT);
+				message.uniqueid = contentValues.getAsString(DbColumns.UNIQUE_ID);
+				message.partnerusername = contentValues.getAsString(DbColumns.PARTNER_USERNAME);
 				cursor.moveToNext();
-				list.add(mh);
+				list.add(message);
 			}
 			final long endTime = new Date().getTime();
 			MLog.i(TAG, "MessageManager.getMessagesByContainer() got ",list.size(), " messages for container ", containerid, " total time=", ((endTime-startTime) / 1000), " seconds");
@@ -275,23 +274,23 @@ public final class LocalMessageManager {
 		}
 	}
 	
-	private ContentValues getContentValues(final Message mh) {
+	private ContentValues getContentValues(final Message message) {
 
 		final ContentValues values = new ContentValues();
-		if (mh.sqlliteid != 0)
-			values.put(DbColumns.ID, mh.sqlliteid);
-		values.put(DbColumns.CONTAINER_ID, mh.touserid);
-		values.put(DbColumns.TEXT, mh.text);
-		values.put(DbColumns.USERNAME, mh.username);
-		values.put(DbColumns.DEVICEID, mh.deviceid);
-		if (mh.date != null) {
-			values.put(DbColumns.DATELONG, mh.date.getTime());
+		if (message.sqlliteid != 0)
+			values.put(DbColumns.ID, message.sqlliteid);
+		values.put(DbColumns.CONTAINER_ID, message.containerid);
+		values.put(DbColumns.TEXT, message.text);
+		values.put(DbColumns.PARTNER_USERNAME, message.partnerusername);
+		values.put(DbColumns.PARTNER_ID, message.partneruserid);
+		if (message.createdate != null) {
+			values.put(DbColumns.CREATE_DATE, message.createdate.getTime());
 		}
-		if (mh.read != null) {
-			values.put(DbColumns.READ, mh.read.getTime());
+		if (message.read != null) {
+			values.put(DbColumns.READ, message.read.getTime());
 		}
-		values.put(DbColumns.FILEKEY, mh.filekey);
-		values.put(DbColumns.UNIQUE_ID, mh.uniqueid);
+		values.put(DbColumns.FILEKEY, message.filekey);
+		values.put(DbColumns.UNIQUE_ID, message.uniqueid);
 		return values;
 	}	
 
@@ -302,12 +301,11 @@ public final class LocalMessageManager {
 		}
 
 		public static final String ID = "sqlliteid";
-		public static final String CONTAINER_ID = "touserid";
+		public static final String CONTAINER_ID = "containerid"; //my user id + '_' + other user id
 		public static final String TEXT = "text";
-		public static final String USERNAME = "username";
-		public static final String DEVICEID = "deviceid";
-		public static final String DATE = "date";
-		public static final String DATELONG = "datelong";
+		public static final String PARTNER_USERNAME = "partnerusername";
+		public static final String PARTNER_ID = "partneruserid";
+		public static final String CREATE_DATE = "createdate";
 		public static final String READ = "read";
 		public static final String FILEKEY = "filekey";
 		public static final String UNIQUE_ID = "uniqueid";
@@ -319,68 +317,6 @@ public final class LocalMessageManager {
 	}
 	
 	private void upgrade(final SQLiteDatabase db) {
-		
-		if (db == null) return;
-		
-		Cursor cursor = null;
-		
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy EEE, d MMM hh:mm:ss a");
-		
-		try {
-			final SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
-			qb.setTables(MESSAGE_TABLE_NAME);
-			cursor = qb.query(db, null, null, null, null, null,
-					DbColumns.DEFAULT_SORT_ORDER);
-			final ContentValues contentValues = new ContentValues();
-			cursor.moveToFirst();
-			while (!cursor.isAfterLast()) {
-				DatabaseUtils.cursorRowToContentValues(cursor, contentValues);
-				final Message mh = new Message();
-				final Integer idVal = contentValues.getAsInteger(DbColumns.ID);
-				if (idVal != null) {
-					mh.sqlliteid = idVal.intValue();
-				}
-				mh.touserid = contentValues.getAsInteger(DbColumns.CONTAINER_ID);
-			
-				//old column
-				final String dateString = contentValues.getAsString(DbColumns.DATE);
-				//new column
-				final Long dateLong = contentValues.getAsLong(DbColumns.DATELONG);
-
-				//upgrade column, if not upgraded yet
-				boolean doUpgradeColumn = false;
-				if (dateLong == null) {
-					doUpgradeColumn = true;
-					if (dateString != null) {
-						mh.date = dateFormat.parse("2012 " + dateString);
-					} else {
-						mh.date = new Date();
-					}
-				}
-				final Long readLong = contentValues.getAsLong(DbColumns.READ);
-				if (readLong != null) {
-					mh.read = new Date(readLong);
-				}
-				mh.deviceid = contentValues.getAsString(DbColumns.DEVICEID);
-				mh.filekey = contentValues.getAsString(DbColumns.FILEKEY);
-				mh.text = contentValues.getAsString(DbColumns.TEXT);
-				mh.uniqueid = contentValues.getAsString(DbColumns.UNIQUE_ID);
-				mh.username = contentValues.getAsString(DbColumns.USERNAME);
-				cursor.moveToNext();
-				if (doUpgradeColumn) {
-					db.replace(MESSAGE_TABLE_NAME, null,
-							getContentValues(mh));
-					MLog.i(TAG, "MessageManager updated ", mh.text, " mh.date=", mh.date.toString());
-				}
-			}
-			MLog.i(TAG, "MessageManager upgraded ");
-		} catch (Exception e) {
-			MLog.e(TAG, "MessageManager upgrade failed.. ", e);
-		} finally {
-			if (cursor != null) {
-				cursor.close();
-			}
-		}
 	}
 
 	/**
@@ -433,44 +369,45 @@ public final class LocalMessageManager {
 				db.execSQL("CREATE TABLE " + MESSAGE_TABLE_NAME + " ("
 						+ DbColumns.ID
 						+ " INTEGER PRIMARY KEY AUTOINCREMENT,"
-						+ DbColumns.CONTAINER_ID + " INTEGER, "
+						+ DbColumns.CONTAINER_ID + " TEXT, "
 						+ DbColumns.TEXT + " TEXT, "
-						+ DbColumns.USERNAME + " TEXT, " 
-						+ DbColumns.DEVICEID + " TEXT, " 
-						+ DbColumns.DATE + " INTEGER, "
+						+ DbColumns.PARTNER_USERNAME + " TEXT, "
+						+ DbColumns.PARTNER_ID + " TEXT, "
+						+ DbColumns.CREATE_DATE + " INTEGER, "
 						+ DbColumns.FILEKEY + " TEXT, "
+                        + DbColumns.READ + " INTEGER, "
 						+ DbColumns.UNIQUE_ID + " TEXT );");
 				
 				MLog.i(TAG, "MessageManager.onCreate() created message database..");  
-				db.execSQL("CREATE INDEX containerid_index on message(touserid);");
-				db.execSQL("CREATE INDEX uniqueid_index on message(uniqueid);");
+				db.execSQL("CREATE INDEX "+DbColumns.CONTAINER_ID+"_index on message("+DbColumns.CONTAINER_ID+");");
+				db.execSQL("CREATE INDEX "+DbColumns.UNIQUE_ID+"_index on message("+DbColumns.UNIQUE_ID+");");
 				MLog.i(TAG, "MessageManager.onCreate() created indexes on message database..");
 
 			} catch (Throwable t) {
 				MLog.w(TAG, "Error in creating extension table: It may already exist which is fine..", t);
 			}
 		}
-		
+
 		void onUpgrade(final SQLiteDatabase db, final int newVersion) {
 			if (db == null) {
 				return;
 			}
-			try {
-				db.execSQL("alter table message add datelong integer");
-			}catch(final Exception e) {
-			}
-			
-			try {
-				db.execSQL("alter table message add read integer");
-			}catch(final Exception e) {
-			}			
-			
-			try {
-				upgrade(db);
-			}catch(final Exception e) {
-				MLog.e(TAG, "MessageManager database upgrade failed..",e);
-			}
-			
+//			try {
+//				db.execSQL("alter table message add datelong integer");
+//			}catch(final Exception e) {
+//			}
+//
+//			try {
+//				db.execSQL("alter table message add read integer");
+//			}catch(final Exception e) {
+//			}
+//
+//			try {
+//				upgrade(db);
+//			}catch(final Exception e) {
+//				MLog.e(TAG, "MessageManager database upgrade failed..",e);
+//			}
+
 			db.setVersion(newVersion);
 		}
 	}
