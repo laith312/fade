@@ -19,7 +19,35 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class ApiTest extends AndroidTestCase {
 
+    public void _testGetRegisteredEmailsFromList() {
+
+        final String listOfEmails = "testGuy1234@gmail.com laith.alnagem@gmail.com laith.alnagem+1@gmail.com laith.alnagem+2@gmail.com testUser888@gmail.com laith.alnagem+3@gmail.com blahblahblah@blah.com fakeclown@TEST.COM";
+        FadeApplication.setRequestQueue(getContext());
+        System.out.println("Testing get registered emails from list of email");
+        FadeApi.getEmailExists("",listOfEmails,new Response.Listener<String>() {
+            @Override
+            public void onResponse(final String s) {
+                try {
+                    final JSONObject response = new JSONObject(s);
+                    final JSONArray data = response.getJSONArray("data");
+                    for (int i=0;i<data.length();i++) {
+                        System.out.println("User with email: "+ data.getJSONObject(i));
+                    }
+                }catch(final Exception e) {
+                    System.out.println("Email error: " + e);
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                System.out.println("User with email error: "+ volleyError.toString());
+            }
+        });
+    }
+
     public void testAuthUser() {
+
+        _testGetRegisteredEmailsFromList();
 
         final AtomicBoolean isNetworkCallFinished = new AtomicBoolean(false);
         final AtomicBoolean isEverythingSuccess = new AtomicBoolean(false);
