@@ -359,10 +359,18 @@ public final class FadeApi {
      * @param listener
      * @param errorListener
      */
-    public static void gcmInstalled(final Object cancelTag, final String listOfUserIds, final Response.Listener<String> listener, final Response.ErrorListener errorListener) {
+    public static void gcmIsSignedIn(final Object cancelTag, final String listOfUserIds, final Response.Listener<String> listener, final Response.ErrorListener errorListener) {
         final HashMap<String, String> params = new HashMap<String, String>();
         params.put("list", listOfUserIds);
         final Request request = new FadePostRequest(API_BASE + "/ins", params, listener, errorListener);
+        request.setShouldCache(false).setRetryPolicy(DEFAULT_RETRY_POLICY).setTag(cancelTag);
+        FadeApplication.getRequestQueue().add(request);
+    }
+
+    public static void getEmailExists(final Object cancelTag, final String listOfEmails, final Response.Listener<String> listener, final Response.ErrorListener errorListener) {
+        final HashMap<String, String> params = new HashMap<String, String>();
+        params.put("list", listOfEmails);
+        final Request request = new FadePostRequest(API_BASE + "/e", params, listener, errorListener);
         request.setShouldCache(false).setRetryPolicy(DEFAULT_RETRY_POLICY).setTag(cancelTag);
         FadeApplication.getRequestQueue().add(request);
     }
